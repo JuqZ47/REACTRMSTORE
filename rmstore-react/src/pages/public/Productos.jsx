@@ -1,22 +1,49 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/store/ProductCard';
 import { getProductosStorage } from '../../services/storageService';
 import { useCart } from '../../context/CartContext';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
-  const [categoriaSel, setCategoriaSel] = useState('Todos');
+  const [searchParams, setSearchParams] = useSearchParams();
   const { agregarAlCarrito } = useCart();
+
+  // Obtener la categoría inicial de los parámetros URL si existe
+  const categoriaURL = searchParams.get('categoria') || 'Todos';
+  const [categoriaSel, setCategoriaSel] = useState(categoriaURL);
 
   useEffect(() => {
     setProductos(getProductosStorage());
   }, []);
 
-  const categorias = ['Todos', 'Star Wars', 'Technic', 'Harry Potter', 'City', 'Icons', 'Marvel'];
+  // Mantener sincronizado el estado local si cambia el parámetro de la URL
+  useEffect(() => {
+    if (searchParams.has('categoria')) {
+      setCategoriaSel(searchParams.get('categoria'));
+    } else {
+      setCategoriaSel('Todos');
+    }
+  }, [searchParams]);
 
+  const categorias = ['Todos', 'Star Wars', 'Technic', 'Harry Potter', 'City', 'Icons', 'Marvel', 'Ofertas'];
+
+  // Cambia la categoría y actualiza la URL dinámicamente
+  const handleSeleccionarCategoria = (cat) => {
+    setCategoriaSel(cat);
+    if (cat === 'Todos') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ categoria: cat });
+    }
+  };
+
+  // Filtrado de productos por categoría
   const filtrados = categoriaSel === 'Todos'
     ? productos
-    : productos.filter(p => p.categoria.toLowerCase() === categoriaSel.toLowerCase());
+    : categoriaSel === 'Ofertas'
+    ? productos.filter(p => p.enOferta || p.descuento)
+    : productos.filter(p => p.categoria && p.categoria.toLowerCase() === categoriaSel.toLowerCase());
 
   return (
     <main className="container my-4">
@@ -28,8 +55,8 @@ const Productos = () => {
           {categorias.map(cat => (
             <button
               key={cat}
-              onClick={() => setCategoriaSel(cat)}
-              className={`btn btn-sm rounded-pill fw-semibold px-3 ${categoriaSel === cat ? 'btn-danger' : 'btn-outline-secondary'}`}
+              onClick={() => handleSeleccionarCategoria(cat)}
+              className={`btn btn-sm rounded-pill fw-semibold px-3 ${categoriaSel.toLowerCase() === cat.toLowerCase() ? 'btn-danger' : 'btn-outline-secondary'}`}
             >
               {cat}
             </button>
