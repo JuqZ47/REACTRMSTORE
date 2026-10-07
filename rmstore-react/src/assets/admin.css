@@ -1,0 +1,555 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: #1e293b;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    padding: 24px 20px;
+    font-size: 20px;
+    font-weight: 800;
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+.sidebar-brand span {
+    color: #e52521;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.sidebar-menu a:hover, 
+.sidebar-menu a.active {
+    background-color: #334155;
+    color: #fff;
+    border-left: 4px solid #e52521;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid #334155;
+}
+
+.sidebar-footer a {
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Main Content Area */
+.admin-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    background: #fff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-header h2 {
+    font-size: 20px;
+    color: #1e293b;
+}
+
+.admin-user {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.admin-content {
+    padding: 30px;
+}
+
+/* Tablas de Datos */
+.card-admin {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.tabla-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-crear {
+    background-color: #e52521;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.tabla-datos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-datos th, 
+.tabla-datos td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.tabla-datos th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+}
+
+.alerta-critica {
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.badge-rol {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.badge-rol.admin { background-color: #fef3c7; color: #92400e; }
+
+/* =======================================================
+   PANEL ADMIN (SOLO PARA CELULARES Y TABLETS)
+   ======================================================= */
+@media (max-width: 900px) {
+    /* 1. El contenedor general pasa de fila horizontal a columna vertical */
+    body,
+    .admin-container,
+    .dashboard-layout,
+    .wrapper,
+    .layout-admin {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+    }
+
+    /* 2. El sidebar pasa a colocarse arriba ocupando todo el ancho */
+    aside,
+    .sidebar,
+    .admin-sidebar {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        position: relative !important;
+        padding: 15px !important;
+    }
+
+    /* 3. El menú de enlaces se acomoda horizontalmente en una barra deslizable o en bloque */
+    aside nav,
+    .sidebar nav,
+    .sidebar-menu,
+    aside ul {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 10px 0 !important;
+    }
+
+    aside nav a,
+    .sidebar a,
+    .sidebar-link {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+        border-radius: 6px !important;
+        white-space: nowrap !important;
+    }
+
+    /* El botón de cerrar sesión se acomoda al final del menú sin ocupar toda la pantalla */
+    .cerrar-sesion,
+    aside .btn-danger,
+    aside a[onclick*="cerrarSesion"] {
+        position: relative !important;
+        bottom: auto !important;
+        margin: 5px auto 0 !important;
+        display: inline-block !important;
+        text-align: center !important;
+    }
+
+    /* 4. La zona de contenido principal aprovecha el 100% de la pantalla */
+    main,
+    .main-content,
+    .contenido-admin,
+    .admin-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Cabecera (¡HOLA Julián! / Sesión activa) */
+    .admin-header,
+    .topbar,
+    .header-admin {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* 6. Tarjetas blancas a ancho completo */
+    .card,
+    .card-resumen,
+    .panel-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 20px 0 !important;
+        padding: 20px !important;
+    }
+
+    /* 7. Tablas de Productos y Usuarios con scroll horizontal táctil */
+    table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+    }
+
+    /* Estilo de celdas en móvil para evitar texto amontonado */
+    table th, 
+    table td {
+        padding: 10px 14px !important;
+        font-size: 0.88rem !important;
+    }
+}
+
+/* =======================================================
+   FORMULARIOS ADMIN (PRODUCTO Y USUARIO)
+   ======================================================= */
+@media (max-width: 900px) {
+    /* 1. Forzar a los contenedores de formularios a ser de 1 sola columna */
+    form,
+    .form-grid,
+    .admin-form-grid,
+    .grid-form,
+    .row-form {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 15px !important;
+    }
+
+    /* 2. Cada grupo de campo (label + input) ocupa todo el ancho */
+    .form-group,
+    .campo,
+    .col-form,
+    form > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Todos los inputs, selects y textareas al 100% real */
+    form input,
+    form select,
+    form textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 14px !important;
+    }
+
+    /* 4. Alinear los botones de Guardar y Volver en horizontal equilibrado */
+    .form-acciones,
+    .botones-form,
+    form .d-flex {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+    }
+
+    .form-acciones button,
+    .form-acciones a,
+    .botones-form button,
+    .botones-form a {
+        flex: 1 !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* Contenedor general en PC: alinea sidebar y contenido arriba */
+body {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #f1f5f9 !important;
+    min-height: 100vh !important;
+}
+
+/* Sidebar fijo a la izquierda */
+.sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    min-height: 100vh !important;
+    flex-shrink: 0 !important;
+}
+
+/* Contenido principal: inicia directamente arriba */
+.admin-main {
+    flex: 1 1 auto !important;
+    width: calc(100% - 250px) !important;
+    padding: 15px 30px !important;
+    margin: 0 !important;
+}
+
+/* Encabezado compacto pegado arriba */
+.admin-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 0 !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Compactar márgenes del formulario para que todo quepa en pantalla */
+.card-formulario {
+    padding: 20px 25px !important;
+    margin-top: 0 !important;
+}
+
+.card-formulario .mb-3,
+.card-formulario .row.g-3 {
+    margin-bottom: 10px !important;
+}
+
+.card-formulario label {
+    margin-bottom: 3px !important;
+    font-size: 0.85rem !important;
+}
+
+.card-formulario .form-control,
+.card-formulario .form-select {
+    padding: 6px 12px !important;
+    font-size: 0.9rem !important;
+}
+
+/* En móviles vuelve al modo vertical limpio */
+@media (max-width: 900px) {
+    body {
+        flex-direction: column !important;
+    }
+    .sidebar {
+        width: 100% !important;
+        min-height: auto !important;
+    }
+    .admin-main {
+        width: 100% !important;
+        padding: 15px !important;
+    }
+}
+
+/* Botón Eliminar uniforme para ambas tablas */
+.btn-eliminar-tabla,
+.btn-outline-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff !important;
+    border: 1px solid #ef4444 !important;
+    color: #ef4444 !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-eliminar-tabla:hover,
+.btn-outline-danger:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Badges con fondo pastel redondeado */
+.badge-rol {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Botón Editar uniforme para tablas */
+.btn-editar-tabla {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff !important;
+    border: 1px solid #0284c7 !important;
+    color: #0284c7 !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-editar-tabla:hover {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================
+   Estilos de Impresión Térmica Directa
+   ========================================== */
+.ticket-formato-impresora {
+    font-family: 'Courier New', Courier, monospace !important;
+    width: 280px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px dashed #000;
+    background-color: #fff;
+    color: #000;
+    font-size: 11px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.ticket-formato-impresora table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.ticket-formato-impresora th, 
+.ticket-formato-impresora td {
+    padding: 2px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.ticket-linea-punteada {
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+}
+
+.ticket-linea-continua {
+    border-top: 1px solid #000;
+    margin: 6px 0;
+}
+
+/* Ocultar absolutamente todo excepto el ticket al imprimir */
+@media print {
+    /* Oculta todo el documento */
+    body * {
+        visibility: hidden !important;
+    }
+    
+    /* Muestra únicamente el contenedor del ticket y sus hijos */
+    #resumen-ticket-modal, 
+    #resumen-ticket-modal * {
+        visibility: visible !important;
+    }
+
+    /* Posiciona el ticket arriba a la izquierda para la impresora */
+    #resumen-ticket-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* Eliminar bordes o sombras del modal */
+    .modal, .modal-dialog, .modal-content, .modal-body {
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+}
+
+.admin-main {
+    padding-right: 35px !important;
+    overflow-x: hidden;
+}
+
+.admin-header {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.admin-user .badge {
+    white-space: nowrap !important;
+}

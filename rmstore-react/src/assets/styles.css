@@ -1,0 +1,1080 @@
+/* =======================================================
+   1. RESET & ESTILOS BASE
+   ======================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background-color: #f4f6f9;
+    color: #333333;
+}
+
+main {
+    flex: 1;
+}
+
+/* =======================================================
+   2. NAVBAR & HEADER
+   ======================================================= */
+.header-principal {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.top-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+    color: #111111;
+}
+
+.logo span {
+    color: #dc3545; /* Rojo Corporativo RMSTORE */
+}
+
+.nav-links a {
+    margin: 0 12px;
+    text-decoration: none;
+    color: #555555;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.nav-links a.active, 
+.nav-links a:hover {
+    color: #dc3545;
+}
+
+.user-actions a {
+    margin-left: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333333;
+}
+
+.btn-cart {
+    background-color: #dc3545;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-cart:hover {
+    background-color: #b02a37;
+    color: #ffffff;
+}
+
+/* =======================================================
+   3. HERO BANNER PRINCIPAL (ESTILO LEGO STORE)
+   ======================================================= */
+.hero-banner-lego {
+    background: linear-gradient(135deg, #0b1a30 0%, #1a3a60 50%, #d91b2b 100%);
+    border-radius: 20px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.hero-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+.hero-content h1 {
+    font-size: 38px;
+    margin-bottom: 15px;
+    color: #1a1a1a;
+}
+
+.hero-content p {
+    font-size: 16px;
+    color: #666666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.hero-image {
+    width: 100%;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.hero-image img,
+#banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: bottom center;
+    border-radius: 12px;
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* =======================================================
+   4. COMPONENTES INTERACTIVOS (HOME / INDEX)
+   ======================================================= */
+/* Categorías Rápidas Circulares (Quick Pills) */
+.quick-cat-item {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-cat-item:hover {
+    transform: translateY(-5px);
+}
+
+.quick-cat-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.quick-cat-item:hover .quick-cat-icon {
+    border-color: #dc3545;
+    background-color: #ffffff;
+}
+
+/* Pestañas de Sets Recomendados */
+.nav-pills-lego .nav-link {
+    color: #495057;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 8px 20px;
+    border: 1px solid transparent;
+}
+
+.nav-pills-lego .nav-link.active {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+/* Tarjetas del Estante Interactivo */
+.card-lego-shelf {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.card-lego-shelf:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Spotlight de la Semana (Modo Oscuro) */
+.spotlight-box {
+    background-color: #121212;
+    border-radius: 24px;
+    color: #ffffff;
+}
+
+.pin-interactive {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.pin-interactive:hover {
+    transform: scale(1.15);
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+/* =======================================================
+   5. CATÁLOGO DE PRODUCTOS & FILTROS
+   ======================================================= */
+.contenedor-catalogo,
+.destacados-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.catalogo-header,
+.destacados-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.catalogo-header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.filtros-categoria {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-filtro {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-filtro.active, 
+.btn-filtro:hover {
+    background-color: #dc3545;
+    color: #ffffff;
+    border-color: #dc3545;
+}
+
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card-producto {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-producto img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    object-position: center;
+    padding: 12px;
+    background-color: #ffffff;
+}
+
+.card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-body .categoria {
+    font-size: 12px;
+    color: #888888;
+    text-transform: uppercase;
+}
+
+.card-body h3 {
+    font-size: 16px;
+    margin: 8px 0;
+    flex-grow: 1;
+}
+
+.card-body .precio {
+    font-size: 18px;
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 12px;
+}
+
+.card-acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+/* =======================================================
+   6. BOTONES GLOBALES & EFECTOS HOVER
+   ======================================================= */
+/* Botón General Primario (Rojo Corporativo) */
+.btn-primary {
+    background-color: #dc3545;
+    color: #ffffff;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #b02a37;
+    color: #ffffff;
+}
+
+/* Botón "Ver Detalle" (Azul LEGO #006cb7) */
+.btn-ver,
+a.btn-ver,
+.card-producto .btn-ver,
+#contenedor-productos .btn-outline-dark,
+.card .btn-outline-dark {
+    background-color: #006cb7 !important;
+    border-color: #006cb7 !important;
+    color: #ffffff !important;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.25s ease-in-out !important;
+    cursor: pointer !important;
+}
+
+.btn-ver:hover,
+a.btn-ver:hover,
+.card-producto .btn-ver:hover,
+#contenedor-productos .btn-outline-dark:hover,
+.card .btn-outline-dark:hover {
+    background-color: #004d84 !important;
+    border-color: #004d84 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 108, 183, 0.35) !important;
+}
+
+/* Botón "Añadir al Carrito" (Rojo Corporativo) */
+.btn-add,
+.card-producto .btn-add,
+#contenedor-productos .btn-danger,
+#contenedor-estante-lego .btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    transition: all 0.25s ease-in-out !important;
+    cursor: pointer !important;
+}
+
+.btn-add:hover,
+.card-producto .btn-add:hover,
+#contenedor-productos .btn-danger:hover,
+#contenedor-estante-lego .btn-danger:hover {
+    background-color: #b02a37 !important;
+    border-color: #b02a37 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.35) !important;
+}
+
+/* Click feedback */
+.btn-ver:active,
+.btn-add:active,
+#contenedor-productos .btn:active {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+}
+
+/* =======================================================
+   7. FICHA DE DETALLE DE PRODUCTO
+   ======================================================= */
+.contenedor-detalle {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #777777;
+}
+
+.breadcrumb a {
+    color: #006cb7;
+    text-decoration: none;
+}
+
+.grid-detalle {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.galeria-fotos #foto-principal {
+    width: 100%;
+    height: 380px;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.miniaturas .mini {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    transition: border-color 0.2s ease;
+}
+
+.miniaturas .mini.active,
+.miniaturas .mini:hover {
+    border-color: #dc3545;
+}
+
+.info-compra h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.codigo-set {
+    color: #666666;
+    margin-bottom: 15px;
+}
+
+.precio-detalle {
+    font-size: 30px;
+    color: #dc3545;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.descripcion {
+    line-height: 1.6;
+    color: #555555;
+    margin-bottom: 25px;
+}
+
+.selector-cantidad {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.controles-contador {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.btn-qty {
+    background: #e9ecef;
+    border: none;
+    padding: 8px 14px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-qty:hover {
+    background-color: #dee2e6;
+}
+
+.controles-contador span {
+    padding: 0 15px;
+    font-weight: bold;
+}
+
+.btn-agregar-carrito {
+    width: 100%;
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-agregar-carrito:hover {
+    background-color: #b02a37;
+}
+
+/* =======================================================
+   8. VISTA DE CARRITO DE COMPRAS
+   ======================================================= */
+.contenedor-carrito {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.grid-carrito {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.item-compra {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.item-compra img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.item-info {
+    flex-grow: 1;
+}
+
+.item-subtotal {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.btn-eliminar {
+    background: none;
+    border: none;
+    color: #999999;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.btn-eliminar:hover {
+    color: #dc3545;
+}
+
+.resumen-carrito {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.linea-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0;
+    font-size: 16px;
+}
+
+.total-destacado {
+    font-size: 22px;
+    font-weight: bold;
+    border-top: 2px solid #eeeeee;
+    padding-top: 15px;
+    color: #111111;
+}
+
+.cupon-area {
+    margin: 20px 0;
+}
+
+.grupo-cupon {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.grupo-cupon input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+
+.grupo-cupon button {
+    background: #333333;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-pagar {
+    width: 100%;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-pagar:hover {
+    background-color: #218838;
+}
+
+/* =======================================================
+   9. FORMULARIOS (LOGIN, REGISTRO, CONTACTO)
+   ======================================================= */
+.contenedor-formulario {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card-formulario {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-formulario.form-ancho {
+    max-width: 900px;
+}
+
+.form-header {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.form-header h2 {
+    font-size: 24px;
+    color: #111111;
+}
+
+.form-header p {
+    color: #666666;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.grupo-campo {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-form-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.grupo-campo label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.grupo-campo input, 
+.grupo-campo select, 
+.grupo-campo textarea {
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.grupo-campo input:focus, 
+.grupo-campo select:focus, 
+.grupo-campo textarea:focus {
+    border-color: #dc3545;
+}
+
+.grupo-campo input.input-error, 
+.grupo-campo select.input-error, 
+.grupo-campo textarea.input-error {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
+.msg-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+.btn-submit {
+    width: 100%;
+    background-color: #dc3545;
+    color: #ffffff;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: #b02a37;
+}
+
+/* =======================================================
+   10. NOSOTROS & BLOGS
+   ======================================================= */
+.contenedor-nosotros,
+.contenedor-blogs {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.nosotros-hero {
+    text-align: center;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.nosotros-hero h1,
+.titulo-seccion {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.nosotros-hero p {
+    color: #555555;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.nosotros-mision-vision {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.card-info {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.card-info h2 {
+    color: #dc3545;
+    margin-bottom: 12px;
+}
+
+.card-blog {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    align-items: center;
+}
+
+.card-blog h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+.card-blog p {
+    color: #666666;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.btn-ver-caso {
+    background-color: #333333;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+}
+
+.btn-ver-caso:hover {
+    background-color: #111111;
+}
+
+.card-blog img,
+.img-articulo {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.card-blog img {
+    height: 220px;
+}
+
+.img-articulo {
+    height: 350px;
+    margin-bottom: 25px;
+}
+
+.contenedor-articulo {
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+.btn-volver {
+    color: #006cb7;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.contenedor-articulo h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.fecha-post {
+    color: #888888;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.cuerpo-articulo p {
+    line-height: 1.7;
+    color: #444444;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+/* =======================================================
+   11. FOOTER & REDES SOCIALES
+   ======================================================= */
+.footer-principal {
+    background-color: #222222;
+    color: #ffffff;
+    padding: 40px 20px;
+    margin-top: 50px;
+}
+
+.red-social-link {
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    display: inline-block;
+}
+
+.red-social-link:hover {
+    color: #dc3545 !important;
+    transform: translateY(-2px);
+}
+
+/* =======================================================
+   ESTILOS DE MAQUETACIÓN PARA PANEL DE ADMINISTRACIÓN
+   ======================================================= */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #f8fafc !important;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.admin-layout .sidebar {
+    width: 250px;
+    min-width: 250px;
+    flex-shrink: 0;
+}
+
+.admin-layout .admin-main {
+    flex-grow: 1;
+    padding: 20px 30px;
+    margin: 0 !important;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* =======================================================
+   BOTON EDITAR EN TABLAS DE ADMINISTRACIÓN
+   ======================================================= */
+.btn-editar-tabla {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff !important;
+    border: 1px solid #0284c7 !important;
+    color: #0284c7 !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-editar-tabla:hover {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+}
+
+/* Responsividad para móviles y pantallas pequeñas */
+@media (max-width: 900px) {
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    .admin-layout .sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .admin-layout .admin-main {
+        padding: 15px;
+    }
+}
+
+/* =======================================================
+   INTEGRACIÓN ESTÉTICA PARA IMÁGENES DEL SPOTLIGHT
+   ======================================================= */
+
+#spot-img {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+#spot-img:hover {
+    transform: scale(1.02);
+}
+
+/* =======================================================
+   EFECTOS DE HOVER E INTERACCIÓN PARA ÍCONOS DEL FOOTER
+   ======================================================= */
+footer .d-flex a {
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+footer .d-flex a:hover {
+    color: #dc3545 !important; /* Rojo característico RMSTORE / LEGO */
+    transform: translateY(-3px); /* Pequeña elevación al pasar el cursor */
+}
+
+/* ==========================================
+   Módulo Punto de Venta (POS - Vendedor)
+   ========================================== */
+.pos-container {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 991px) {
+    .pos-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pos-product-card {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pos-product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.ticket-pos {
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+}
+
+/* =======================================================
+   CENTRADO Y RESPONSIVIDAD GLOBAL (MONITORES 16:9 / FULL HD)
+   ======================================================= */
+#root {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main, 
+.main-content, 
+main.flex-grow-1 {
+    width: 100%;
+    max-width: 1320px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.container {
+    max-width: 1280px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
