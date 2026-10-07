@@ -16,6 +16,9 @@ import DetalleProducto from './pages/public/DetalleProducto';
 import Carrito from './pages/public/Carrito';
 import Login from './pages/public/Login';
 import Registro from './pages/public/Registro';
+import Nosotros from './pages/public/Nosotros';
+import Blogs from './pages/public/Blogs';
+import Contacto from './pages/public/Contacto';
 
 // Vistas Admin / POS
 import DashboardAdmin from './pages/admin/DashboardAdmin';
@@ -39,6 +42,9 @@ function App() {
               <Route path="carrito" element={<Carrito />} />
               <Route path="login" element={<Login />} />
               <Route path="registro" element={<Registro />} />
+              <Route path="/nosotros" element={<Nosotros />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/contacto" element={<Contacto />} />
             </Route>
 
             {/* Rutas Protegidas de Administración (ADMIN) */}

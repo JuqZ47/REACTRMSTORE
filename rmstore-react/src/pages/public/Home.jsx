@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../../components/store/ProductCard';
+import InspireCarousel from '../../components/store/InspireCarousel'; // Importación corregida
 import { getProductosStorage } from '../../services/storageService';
 import { useCart } from '../../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
@@ -10,6 +12,7 @@ const Home = () => {
   const [spotlightActivo, setSpotlightActivo] = useState('ferrari');
   const [heroIndex, setHeroIndex] = useState(0);
   const { agregarAlCarrito } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setProductos(getProductosStorage());
@@ -26,7 +29,7 @@ const Home = () => {
       btnText: 'Explorar Set Star Wars',
       btnLink: '/detalle-producto/LEG-001',
       esVideo: true,
-      videoUrl: '/img/starwarsmillenium.mp4' // Coloca aquí la ruta de tu video de Star Wars o de fondo 1
+      videoUrl: '/img/starwarsmillenium.mp4'
     },
     {
       badge: 'EDICIÓN ESPECIAL 2026',
@@ -37,7 +40,7 @@ const Home = () => {
       btnText: 'Comprar Ahora',
       btnLink: '/productos',
       esVideo: true,
-      videoUrl: '/img/tecnic,marvelystarwars.mp4' // Tu video del Ferrari Technic
+      videoUrl: '/img/tecnic,marvelystarwars.mp4'
     }
   ];
 
@@ -85,9 +88,8 @@ const Home = () => {
 
   return (
     <div className="container py-4">
-      {/* 1. HERO BANNER DINÁMICO CON FLECHAS DE NAVEGACIÓN */}
+      {/* 1. HERO BANNER DINÁMICO */}
       <section className="position-relative mb-5 rounded-4 overflow-hidden shadow-lg bg-dark text-white" style={{ minHeight: '380px' }}>
-        {/* VIDEO O IMAGEN DE FONDO DEL HERO */}
         {heroActual.esVideo ? (
           <video
             key={heroActual.videoUrl}
@@ -110,13 +112,11 @@ const Home = () => {
           />
         )}
 
-        {/* OVERLAY OSCURO */}
         <div 
           className="position-absolute top-0 start-0 w-100 h-100" 
           style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%)', zIndex: 1 }} 
         />
 
-        {/* CONTENIDO TEXTO HERO */}
         <div className="position-relative p-4 p-md-5 d-flex flex-column justify-content-center h-100" style={{ zIndex: 2, minHeight: '380px' }}>
           <div className="col-12 col-md-7">
             <span className={`badge ${heroActual.badgeBg} mb-3 px-3 py-2 fw-bold text-uppercase`}>
@@ -135,43 +135,65 @@ const Home = () => {
           </div>
         </div>
 
-        {/* FLECHAS DE NAVEGACIÓN LATERALES */}
+        {/* FLECHAS DE NAVEGACIÓN LATERALES (ESTILO MINIMALISTA) */}
         <button
           onClick={anteriorHero}
-          className="btn btn-outline-light rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center"
-          style={{ zIndex: 3, width: '45px', height: '45px', backgroundColor: 'rgba(0,0,0,0.4)' }}
+          className="btn border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center text-white"
+          style={{ 
+            zIndex: 3, 
+            width: '42px', 
+            height: '42px', 
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(4px)',
+            transition: 'background-color 0.3s ease'
+          }}
           aria-label="Anterior"
         >
-          <i className="bi bi-chevron-left fs-5"></i>
+          <i className="bi bi-chevron-left" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}></i>
         </button>
 
         <button
           onClick={siguienteHero}
-          className="btn btn-outline-light rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center"
-          style={{ zIndex: 3, width: '45px', height: '45px', backgroundColor: 'rgba(0,0,0,0.4)' }}
+          className="btn border-0 rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center text-white"
+          style={{ 
+            zIndex: 3, 
+            width: '42px', 
+            height: '42px', 
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(4px)',
+            transition: 'background-color 0.3s ease'
+          }}
           aria-label="Siguiente"
         >
-          <i className="bi bi-chevron-right fs-5"></i>
+          <i className="bi bi-chevron-right" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}></i>
         </button>
       </section>
 
-      {/* 2. CATEGORÍAS RÁPIDAS CIRCULARES */}
+{/* 2. CATEGORÍAS RÁPIDAS CIRCULARES (MÁS GRANDES) */}
       <section className="mb-5">
-        <div className="d-flex justify-content-center justify-content-md-between align-items-center flex-wrap gap-3 text-center">
+        <div className="d-flex justify-content-center align-items-center flex-wrap gap-3 gap-md-4 text-center">
           {[
-            { label: 'Ofertas', icon: 'bi-tag-fill', color: 'text-danger' },
-            { label: 'Star Wars', icon: 'bi-rocket-takeoff-fill', color: 'text-primary' },
-            { label: 'Marvel', icon: 'bi-shield-shaded', color: 'text-danger' },
-            { label: 'Technic', icon: 'bi-gear-fill', color: 'text-warning' },
-            { label: 'Harry Potter', icon: 'bi-magic', color: 'text-info' },
-            { label: 'Botánica', icon: 'bi-flower1', color: 'text-success' },
-            { label: 'City', icon: 'bi-building', color: 'text-secondary' }
+            { label: 'Ofertas', catKey: 'Ofertas', icon: 'bi-tag-fill', color: 'text-danger' },
+            { label: 'Star Wars', catKey: 'Star Wars', icon: 'bi-rocket-takeoff-fill', color: 'text-primary' },
+            { label: 'Marvel', catKey: 'Marvel', icon: 'bi-shield-shaded', color: 'text-danger' },
+            { label: 'Technic', catKey: 'Technic', icon: 'bi-speedometer2', color: 'text-warning' },
+            { label: 'Harry Potter', catKey: 'Harry Potter', icon: 'bi-magic', color: 'text-info' },
+            { label: 'Botánica', catKey: 'Icons', icon: 'bi-flower1', color: 'text-success' },
+            { label: 'City', catKey: 'City', icon: 'bi-building', color: 'text-secondary' }
           ].map((cat, idx) => (
-            <div key={idx} className="quick-cat-item cursor-pointer" onClick={() => setPestanaActiva(cat.label === 'Botánica' ? 'Botánica & Icons' : cat.label)}>
-              <div className="quick-cat-icon mx-auto mb-2 bg-light rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: '65px', height: '65px' }}>
+            <div 
+              key={idx} 
+              className="quick-cat-item cursor-pointer" 
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/productos?categoria=${encodeURIComponent(cat.catKey)}`)}
+            >
+              <div 
+                className="quick-cat-icon mx-auto mb-2 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border" 
+                style={{ width: '72px', height: '72px' }}
+              >
                 <i className={`bi ${cat.icon} fs-4 ${cat.color}`}></i>
               </div>
-              <span className="small fw-bold text-dark d-block">{cat.label}</span>
+              <span className="small fw-bold text-dark d-block" style={{ fontSize: '0.9rem' }}>{cat.label}</span>
             </div>
           ))}
         </div>
@@ -282,52 +304,58 @@ const Home = () => {
       <section className="mb-5">
         <div className="text-center mb-4">
           <h2 className="h3 fw-bold text-dark mb-1">Inspírate y Construye</h2>
-          <p className="text-muted small">Descubre cómo los fanáticos de LEGO dan vida a sus universos favoritos.</p>
+          <p className="text-muted small">
+            Descubre cómo los fanáticos de LEGO dan vida a sus universos favoritos.
+          </p>
         </div>
 
-        <div className="row g-4 align-items-stretch">
+        {/* CONTENEDOR ROW PRINCIPAL QUE PONE LAS DOS COLUMNAS DE LADO Y LADO */}
+        <div className="row g-4 align-items-center">
+          {/* Columna Izquierda: Carrusel Automático */}
           <div className="col-12 col-md-6">
-            <div className="card border-0 shadow-sm rounded-4 overflow-hidden h-100 text-white bg-dark position-relative" style={{ minHeight: '220px' }}>
-              <img
-                src="https://images-na.ssl-images-amazon.com/images/I/91FoS63ClXL.jpg"
-                alt="Comunidad Lego"
-                className="w-100 h-100 position-absolute top-0 start-0 opacity-40"
-                style={{ objectFit: 'cover' }}
-              />
-              <div className="card-img-overlay d-flex flex-column justify-content-end p-4 z-1">
-                <span className="badge bg-warning text-dark fw-bold mb-2 align-self-start">Creatividad Pura</span>
-                <h4 className="fw-bold mb-1">Construye Sin Límites</h4>
-                <p className="small text-white-50 mb-0">Cada bloque ensamblado cuenta una historia única.</p>
-              </div>
-            </div>
+            <InspireCarousel />
           </div>
 
-          <div className="col-12 col-md-6 d-flex flex-column justify-content-between gap-3">
+          {/* Columna Derecha: Ventajas y Dudas */}
+          <div className="col-12 col-md-6">
             <div className="row g-3">
               <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 p-3 text-center bg-white h-100">
-                  <i className="bi bi-box-seam text-danger fs-2 mb-1"></i>
-                  <h6 className="fw-bold text-dark mb-0 small">Envíos a todo Chile</h6>
-                  <span className="text-muted extra-small">Rápidos y protegidos</span>
+                <div className="rounded-4 p-3 py-4 bg-white shadow-sm border text-center h-100 d-flex flex-column justify-content-center align-items-center">
+                  <i className="bi bi-box-seam text-danger display-6 d-block mb-2"></i>
+                  <h6 className="fw-bold mb-1">Envíos a todo Chile</h6>
+                  <p className="text-muted small mb-0">Rápidos y protegidos</p>
                 </div>
               </div>
-              <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 p-3 text-center bg-white h-100">
-                  <i className="bi bi-shield-check text-success fs-2 mb-1"></i>
-                  <h6 className="fw-bold text-dark mb-0 small">100% Original</h6>
-                  <span className="text-muted extra-small">Garantía oficial LEGO</span>
-                </div>
-              </div>
-            </div>
 
-            <div className="card border-0 bg-danger text-white rounded-4 p-3 d-flex flex-row align-items-center justify-content-between shadow-sm">
-              <div>
-                <h6 className="fw-bold mb-0">¿Tienes dudas con tu pedido?</h6>
-                <span className="small opacity-90">Contáctanos directamente por WhatsApp o formulario.</span>
+              <div className="col-6">
+                <div className="rounded-4 p-3 py-4 bg-white shadow-sm border text-center h-100 d-flex flex-column justify-content-center align-items-center">
+                  <i className="bi bi-shield-check text-success display-6 d-block mb-2"></i>
+                  <h6 className="fw-bold mb-1">100% Original</h6>
+                  <p className="text-muted small mb-0">Garantía oficial LEGO</p>
+                </div>
               </div>
-              <a href="https://wa.me/56912345678" target="_blank" rel="noopener noreferrer" className="btn btn-light btn-sm fw-bold text-danger rounded-pill px-3 ms-2">
-                Escríbenos
-              </a>
+
+              <div className="col-12 mt-3">
+                <div
+                  className="rounded-4 p-4 text-white shadow-sm d-flex justify-content-between align-items-center"
+                  style={{ backgroundColor: '#d91b2b' }}
+                >
+                  <div>
+                    <h5 className="fw-bold mb-1">¿Tienes dudas con tu pedido?</h5>
+                    <p className="small mb-0 opacity-75">
+                      Contáctanos directamente por WhatsApp o formulario.
+                    </p>
+                  </div>
+                  <a
+                    href="https://wa.me/56912345678"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-light btn-sm fw-bold px-3 py-2 text-danger rounded-pill flex-shrink-0 ms-2"
+                  >
+                    Escríbenos
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
