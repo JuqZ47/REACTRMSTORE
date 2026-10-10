@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-// Ruta ajustada con la subcarpeta public/
 import Login from '../pages/public/Login'; 
 import { AuthProvider } from '../context/AuthContext';
 import * as storageService from '../services/storageService';
