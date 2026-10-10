@@ -553,3 +553,27 @@ body {
 .admin-user .badge {
     white-space: nowrap !important;
 }
+
+/* 1. Forzar a admin-main a expandirse al 100% de la pantalla */
+.admin-main {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 1.5rem !important;
+  box-sizing: border-box;
+}
+
+/* 2. Configurar el layout Grid para pantallas anchas (16:9) */
+.pos-container {
+  display: grid !important;
+  grid-template-columns: 1fr 380px !important; /* El catálogo ocupa todo el espacio libre y la boleta se fija a 380px */
+  gap: 1.5rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 3. Permitir que la grilla de productos ponga más columnas según el ancho disponible */
+#pos-grid-productos,
+.pos-catalog .row {
+  width: 100%;
+}

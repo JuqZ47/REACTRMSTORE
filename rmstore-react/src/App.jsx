@@ -18,6 +18,7 @@ import Login from './pages/public/Login';
 import Registro from './pages/public/Registro';
 import Nosotros from './pages/public/Nosotros';
 import Blogs from './pages/public/Blogs';
+import DetalleBlog from './pages/public/DetalleBlog';
 import Contacto from './pages/public/Contacto';
 
 // Vistas Admin / POS
@@ -44,6 +45,7 @@ function App() {
               <Route path="registro" element={<Registro />} />
               <Route path="/nosotros" element={<Nosotros />} />
               <Route path="/blogs" element={<Blogs />} />
+              <Route path="/blogs/:id" element={<DetalleBlog />} />
               <Route path="/contacto" element={<Contacto />} />
             </Route>
 

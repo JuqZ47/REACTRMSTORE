@@ -25,7 +25,11 @@ const ProductosLista = () => {
     }
   };
 
+  // Filtrado que descarta registros vacíos o corruptos
   const filtrados = productos.filter(p => {
+    // Omite automáticamente productos sin nombre o vacíos
+    if (!p || !p.nombre || p.nombre.trim() === '') return false;
+
     const texto = busqueda.toLowerCase().trim();
     const id = (p.id || p.codigo || '').toLowerCase();
     const nombre = (p.nombre || '').toLowerCase();
@@ -39,13 +43,13 @@ const ProductosLista = () => {
       <AdminSidebar activo="productos" />
       <main className="admin-main">
         <header className="admin-header d-flex justify-content-between align-items-center gap-3 pe-3">
-        <h2 className="h4 fw-bold mb-0">Terminal POS - Punto de Venta</h2>
-        <div className="admin-user d-flex align-items-center ms-auto">
+          <h2 className="h4 fw-bold mb-0">Terminal POS - Punto de Venta</h2>
+          <div className="admin-user d-flex align-items-center ms-auto">
             <span className="badge bg-light text-dark border px-3 py-2 fw-semibold fs-6 shadow-sm">
-            <i className="bi bi-person-circle me-2 text-danger"></i>
-            {sesion?.email}
+              <i className="bi bi-person-circle me-2 text-danger"></i>
+              {sesion?.email || 'admin@duoc.cl'}
             </span>
-        </div>
+          </div>
         </header>
 
         <section className="admin-content p-4">
@@ -105,13 +109,16 @@ const ProductosLista = () => {
                       const id = p.id || p.codigo;
                       const img = (p.imagenes && p.imagenes.length > 0) ? p.imagenes[0] : (p.imagen || '/img/lego-default.png');
                       const stock = Number(p.stock) || 0;
+                      // Evita renderizar $NaN convirtiendo a número válido
+                      const precioValido = isNaN(Number(p.precio)) ? 0 : Number(p.precio);
+
                       return (
                         <tr key={id}>
                           <td><strong>{id}</strong></td>
-                          <td><img src={img} alt={p.nombre} style={{ width: '40px', height: '40px', objectFit: 'contain' }} /></td>
+                          <td><img src={img} alt={p.nombre || 'Producto'} style={{ width: '40px', height: '40px', objectFit: 'contain' }} /></td>
                           <td>{p.nombre}</td>
-                          <td><span className="badge bg-danger-subtle text-danger">{p.categoria}</span></td>
-                          <td>${Number(p.precio).toLocaleString('es-CL')}</td>
+                          <td><span className="badge bg-danger-subtle text-danger">{p.categoria || 'Sin cat.'}</span></td>
+                          <td>${precioValido.toLocaleString('es-CL')}</td>
                           <td>
                             <span className={`badge ${stock <= 3 ? 'bg-warning text-dark' : 'bg-success'}`}>
                               {stock} un.
