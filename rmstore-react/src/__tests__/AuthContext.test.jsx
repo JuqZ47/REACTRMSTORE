@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-// Importaciones ajustadas a la estructura de src/__tests__/
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import * as storageService from '../services/storageService';
 
