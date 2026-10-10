@@ -40,6 +40,9 @@ const Productos = () => {
 
   // Lógica de Filtrado y Ordenamiento
   let productosFiltrados = productos.filter((p) => {
+    // Omite automáticamente productos vacíos o corruptos (sin nombre)
+    if (!p || !p.nombre || p.nombre.trim() === '') return false;
+
     // Filtro Categoría
     const pasaCategoria =
       categoriaSel === 'Todos' ||
@@ -47,20 +50,21 @@ const Productos = () => {
 
     // Filtro Rango de Precio
     let pasaPrecio = true;
-    if (rangoPrecio === 'bajo') pasaPrecio = p.precio < 50000;
-    if (rangoPrecio === 'medio') pasaPrecio = p.precio >= 50000 && p.precio <= 150000;
-    if (rangoPrecio === 'alto') pasaPrecio = p.precio > 150000;
+    const precio = Number(p.precio) || 0;
+    if (rangoPrecio === 'bajo') pasaPrecio = precio < 50000;
+    if (rangoPrecio === 'medio') pasaPrecio = precio >= 50000 && precio <= 150000;
+    if (rangoPrecio === 'alto') pasaPrecio = precio > 150000;
 
     return pasaCategoria && pasaPrecio;
   });
 
   // Ordenamiento
   if (orden === 'menor') {
-    productosFiltrados.sort((a, b) => a.precio - b.precio);
+    productosFiltrados.sort((a, b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
   } else if (orden === 'mayor') {
-    productosFiltrados.sort((a, b) => b.precio - a.precio);
+    productosFiltrados.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
   } else if (orden === 'nombre') {
-    productosFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    productosFiltrados.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
   }
 
   return (
