@@ -21,13 +21,18 @@ const ProductCard = ({ producto, onAddToCart }) => {
           <h6 className="fw-bold text-dark text-truncate mb-1 small" title={nombre}>{nombre}</h6>
           <p className="fw-bold text-danger mb-3 small">${Number(precio).toLocaleString('es-CL')}</p>
         </div>
+        
+        {/* BOTONES CON CLASES COMPATIBLES CON TU ARCHIVO STYLES.TXT */}
         <div className="d-grid gap-2">
-          <Link to={`/detalle-producto/${encodeURIComponent(idProducto)}`} className="btn btn-primary btn-sm fw-bold rounded-3 py-1">
+          <Link 
+            to={`/detalle-producto/${encodeURIComponent(idProducto)}`} 
+            className="btn btn-ver fw-bold btn-sm rounded-3 py-2 w-100 text-white"
+          >
             Ver Detalle
           </Link>
           <button 
-            className="btn btn-danger btn-sm fw-bold shadow-sm rounded-3 py-1" 
-            onClick={() => onAddToCart(idProducto, 1)} 
+            className="btn btn-add btn-sm fw-bold shadow-sm rounded-3 py-2 text-white" 
+            onClick={() => onAddToCart && onAddToCart(idProducto, 1)} 
             disabled={stockReal === 0}
           >
             <i className="bi bi-cart-plus me-1"></i> {stockReal === 0 ? 'Sin Stock' : 'Añadir al Carrito'}

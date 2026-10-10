@@ -19,11 +19,27 @@ const Login = () => {
     const res = iniciarSesion(email, pass);
 
     if (res.exito) {
-      if (res.rol === 'ADMIN' || res.rol === 'ADMINISTRADOR') {
+      // Extraer el nombre del usuario (o la parte previa al @ de su correo)
+      const nombreUsuario =
+        res.usuario?.nombre ||
+        res.nombre ||
+        (email.includes('@') ? email.split('@')[0] : email);
+
+      // Capitalizar la primera letra del nombre
+      const nombreFormateado =
+        nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1);
+
+      const rol = (res.rol || '').toUpperCase();
+
+      // Alertas personalizadas según el rol
+      if (rol === 'ADMIN' || rol === 'ADMINISTRADOR') {
+        alert(`¡Bienvenido al panel de administración, ${nombreFormateado}!`);
         navigate('/admin');
-      } else if (res.rol === 'VENDEDOR') {
+      } else if (rol === 'VENDEDOR') {
+        alert(`¡Bienvenido al sistema de ventas, ${nombreFormateado}!`);
         navigate('/admin/pos');
       } else {
+        alert(`¡Bienvenido a RMSTORE, ${nombreFormateado}!`);
         navigate('/');
       }
     } else {
@@ -41,7 +57,7 @@ const Login = () => {
               <p className="text-muted small">Ingresa a tu cuenta de cliente o personal de tienda</p>
             </div>
 
-            <form onSubmit={handleSubmit} novalidate>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="mb-3">
                 <label htmlFor="login-email" className="form-label fw-semibold text-secondary small">
                   Correo Electrónico *

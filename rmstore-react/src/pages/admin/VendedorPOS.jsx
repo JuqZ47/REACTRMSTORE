@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 
 const VendedorPOS = () => {
   const { sesion } = useAuth();
+
+  // Estados de productos y carrito POS
   const [productos, setProductos] = useState([]);
   const [carritoPos, setCarritoPos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
@@ -13,207 +15,805 @@ const VendedorPOS = () => {
   const [montoPagaCon, setMontoPagaCon] = useState('');
   const [clienteRun, setClienteRun] = useState('');
 
+  // Estados de Modales y Arqueo
+  const [showApertura, setShowApertura] = useState(false);
+  const [montoApertura, setMontoApertura] = useState('50000');
+  const [showCierre, setShowCierre] = useState(false);
+  const [montoCierreFisico, setMontoCierreFisico] = useState('');
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [ultimoTicket, setUltimoTicket] = useState(null);
+
+  // Cargar productos e inicializar turno
   useEffect(() => {
-    setProductos(getProductosStorage());
-  }, []);
+    const datosProds = getProductosStorage();
+    setProductos(datosProds);
 
+    // Verificar turno de caja
+    const turno = JSON.parse(localStorage.getItem('rmstore_turno_caja'));
+    const userEmail = sesion?.usuario?.correo || sesion?.email || 'vendedor@duoc.cl';
+    if (!turno || turno.estado !== 'ABIERTA' || turno.vendedor !== userEmail) {
+      setShowApertura(true);
+    }
+  }, [sesion]);
+
+  // Cierre y apertura de caja
+  const handleConfirmarApertura = () => {
+    const userEmail = sesion?.usuario?.correo || sesion?.email || 'vendedor@duoc.cl';
+    const nuevoTurno = {
+      vendedor: userEmail,
+      fechaInicio: new Date().toLocaleString('es-CL'),
+      montoInicial: Number(montoApertura) || 0,
+      estado: 'ABIERTA'
+    };
+    localStorage.setItem('rmstore_turno_caja', JSON.stringify(nuevoTurno));
+    setShowApertura(false);
+  };
+
+  const handleConfirmarCierre = () => {
+    const efectivoContado = Number(montoCierreFisico);
+    if (isNaN(efectivoContado)) {
+      alert('Por favor ingresa un monto válido de efectivo contado.');
+      return;
+    }
+
+    let turno = JSON.parse(localStorage.getItem('rmstore_turno_caja')) || {};
+    turno.estado = 'CERRADA';
+    turno.fechaCierre = new Date().toLocaleString('es-CL');
+    turno.montoFisicoEntregado = efectivoContado;
+
+    localStorage.setItem('rmstore_turno_caja', JSON.stringify(turno));
+    alert('Turno de caja cerrado exitosamente. Se ha registrado tu entrega de efectivo.');
+    setShowCierre(false);
+    window.location.reload();
+  };
+
+  // Agregar al carrito POS
   const agregarAlPos = (prod) => {
-    const stockDisp = Number(prod.stock) || 0;
-    if (stockDisp <= 0) return;
+    const id = prod.id || prod.codigo;
+    const stockDisponible = Number(prod.stock) || 0;
+    if (stockDisponible <= 0) return;
 
-    setCarritoPos(prev => {
-      const itemExist = prev.find(i => i.id === (prod.id || prod.codigo));
-      if (itemExist) {
-        if (itemExist.cant + 1 > stockDisp) {
-          alert(`Stock máximo alcanzado (${stockDisp} un.).`);
+    setCarritoPos((prev) => {
+      const existente = prev.find((item) => item.id === id);
+      if (existente) {
+        if (existente.cant + 1 > stockDisponible) {
+          alert(`Stock máximo alcanzado para ${prod.nombre} (${stockDisponible} un.).`);
           return prev;
         }
-        return prev.map(i => i.id === (prod.id || prod.codigo) ? { ...i, cant: i.cant + 1 } : i);
+        return prev.map((item) =>
+          item.id === id ? { ...item, cant: item.cant + 1 } : item
+        );
       }
-      return [...prev, {
-        id: prod.id || prod.codigo,
-        nombre: prod.nombre,
-        precio: Number(prod.precio),
-        cant: 1,
-        stockMax: stockDisp
-      }];
+      return [
+        ...prev,
+        {
+          id,
+          nombre: prod.nombre,
+          precio: isNaN(Number(prod.precio)) ? 0 : Number(prod.precio),
+          cant: 1,
+          stockMax: stockDisponible
+        }
+      ];
     });
   };
 
+  // Cambiar cantidades
   const cambiarCantPos = (id, delta) => {
-    setCarritoPos(prev => prev.map(i => {
-      if (i.id === id) {
-        const nueva = i.cant + delta;
-        if (nueva > i.stockMax) return i;
-        if (nueva <= 0) return null;
-        return { ...i, cant: nueva };
-      }
-      return i;
-    }).filter(Boolean));
+    setCarritoPos((prev) =>
+      prev
+        .map((item) => {
+          if (item.id === id) {
+            const nuevaCant = item.cant + delta;
+            if (nuevaCant > item.stockMax) {
+              alert(`Límite de stock: ${item.stockMax} disponibles.`);
+              return item;
+            }
+            return nuevaCant > 0 ? { ...item, cant: nuevaCant } : null;
+          }
+          return item;
+        })
+        .filter(Boolean)
+    );
   };
 
-  const totalVenta = carritoPos.reduce((acc, i) => acc + (i.precio * i.cant), 0);
-  const pagaConNum = Number(montoPagaCon) || 0;
-  const vuelto = (metodoPago === 'Efectivo' && pagaConNum >= totalVenta) ? (pagaConNum - totalVenta) : 0;
-
-  const handleCompletarVenta = () => {
-    if (carritoPos.length === 0) return alert("Selecciona al menos un producto.");
-    if (metodoPago === 'Efectivo' && pagaConNum < totalVenta) return alert("Monto entregado es menor al total.");
-
-    let prods = getProductosStorage();
-    carritoPos.forEach(item => {
-      const idx = prods.findIndex(p => (p.id || p.codigo) === item.id);
-      if (idx !== -1) {
-        prods[idx].stock = Math.max(0, Number(prods[idx].stock) - item.cant);
-      }
-    });
-
-    localStorage.setItem("rmstore_productos", JSON.stringify(prods));
-    setProductos(prods);
+  const limpiarPos = () => {
     setCarritoPos([]);
-    setMontoPagaCon('');
     setClienteRun('');
-    alert("¡Venta completada exitosamente! Stock actualizado.");
+    setMontoPagaCon('');
   };
 
-  const filtrados = productos.filter(p => {
+  // Cálculos financieros
+  const totalVentaActual = carritoPos.reduce((acc, i) => acc + i.precio * i.cant, 0);
+  const subtotalNeto = Math.round(totalVentaActual / 1.19);
+  const ivaCalculado = totalVentaActual - subtotalNeto;
+
+  const pagaConNum = Number(montoPagaCon) || 0;
+  const vueltoCalculado =
+    metodoPago === 'Efectivo' && pagaConNum >= totalVentaActual && totalVentaActual > 0
+      ? pagaConNum - totalVentaActual
+      : 0;
+
+  // Filtrado de catálogo
+  const filtrados = productos.filter((p) => {
+    if (!p.nombre || p.nombre.trim() === '') return false;
+
     const texto = busqueda.toLowerCase().trim();
-    const id = (p.id || p.codigo || '').toLowerCase();
-    const nombre = (p.nombre || '').toLowerCase();
-    const coincideTexto = id.includes(texto) || nombre.includes(texto);
+    const coincideTexto =
+      (p.nombre || '').toLowerCase().includes(texto) ||
+      (p.id || p.codigo || '').toLowerCase().includes(texto);
     const coincideCat = catFilter === 'Todos' || p.categoria === catFilter;
     return coincideTexto && coincideCat;
   });
 
+  // Procesar Venta
+  const procesarVentaPos = () => {
+    if (carritoPos.length === 0) {
+      alert('Selecciona al menos un producto.');
+      return;
+    }
+
+    if (metodoPago === 'Efectivo' && pagaConNum < totalVentaActual) {
+      alert('El monto ingresado en efectivo es menor al total a pagar.');
+      return;
+    }
+
+    const clienteInput = clienteRun.trim() || 'Cliente Mostrador';
+    const userEmail = sesion?.usuario?.correo || sesion?.email || 'vendedor@duoc.cl';
+
+    // Descontar stock
+    let productosGuardados = getProductosStorage();
+    carritoPos.forEach((itemCart) => {
+      const idx = productosGuardados.findIndex((p) => (p.id || p.codigo) === itemCart.id);
+      if (idx !== -1) {
+        const actualStock = Number(productosGuardados[idx].stock) || 0;
+        productosGuardados[idx].stock = Math.max(0, actualStock - itemCart.cant);
+      }
+    });
+
+    saveProductoStorage(productosGuardados);
+    setProductos(productosGuardados);
+
+    // Guardar venta
+    let ventas = JSON.parse(localStorage.getItem('rmstore_ventas')) || [];
+    const nuevaVenta = {
+      numBoleta: 'BOL-' + Math.floor(100000 + Math.random() * 900000),
+      fecha: new Date().toLocaleString('es-CL'),
+      vendedor: userEmail,
+      cliente: clienteInput,
+      metodoPago,
+      items: JSON.parse(JSON.stringify(carritoPos)),
+      total: totalVentaActual,
+      pagoCon: metodoPago === 'Efectivo' ? pagaConNum : totalVentaActual,
+      vuelto: vueltoCalculado
+    };
+
+    ventas.push(nuevaVenta);
+    localStorage.setItem('rmstore_ventas', JSON.stringify(ventas));
+    localStorage.setItem('rmstore_ultimo_ticket', JSON.stringify(nuevaVenta));
+
+    setUltimoTicket(nuevaVenta);
+    setShowTicketModal(true);
+  };
+
+  // Impresión Directa del Ticket
+  const imprimirTicketDirecto = (venta) => {
+    if (!venta) return;
+    const subtotalCalc = Math.round(venta.total / 1.19);
+    const ivaCalc = venta.total - subtotalCalc;
+
+    const ventanaImpresion = window.open('', '_blank', 'width=400,height=600');
+    const htmlTicket = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+          <meta charset="UTF-8">
+          <title>Boleta ${venta.numBoleta}</title>
+          <style>
+              @page { size: auto; margin: 0mm; }
+              body { font-family: 'Courier New', Courier, monospace; width: 270px; margin: 10px auto; padding: 5px; color: #000; font-size: 11px; line-height: 1.3; }
+              .text-center { text-align: center; }
+              .text-end { text-align: right; }
+              .fw-bold { font-weight: bold; }
+              .text-uppercase { text-transform: uppercase; }
+              table { width: 100%; border-collapse: collapse; margin: 5px 0; }
+              th, td { padding: 2px 0; font-size: 11px; }
+              .linea-punteada { border-top: 1px dashed #000; margin: 6px 0; }
+              .linea-continua { border-top: 1px solid #000; margin: 6px 0; }
+          </style>
+      </head>
+      <body>
+          <div class="text-center fw-bold text-uppercase">RMSTORE COLECCIONABLES</div>
+          <div class="text-center fw-bold">R.U.T.: 77.123.456-K</div>
+          <div class="text-center fw-bold mt-1 text-uppercase">BOLETA ELECTRÓNICA: ${venta.numBoleta}</div>
+          <div class="linea-punteada"></div>
+          <div>FECHA: ${venta.fecha}</div>
+          <div>CAJERO: ${(venta.vendedor || 'Vendedor').split('@')[0]}</div>
+          <div>CLIENTE: ${venta.cliente || 'Cliente'}</div>
+          <div class="linea-punteada"></div>
+          <table>
+              <thead>
+                  <tr class="fw-bold">
+                      <th style="text-align: left; width: 50%;">ITEM</th>
+                      <th style="text-align: center; width: 20%;">CANT</th>
+                      <th style="text-align: right; width: 30%;">TOTAL</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  ${venta.items
+                    .map(
+                      (i) => `
+                      <tr>
+                          <td style="text-align: left;">${i.nombre}</td>
+                          <td style="text-align: center;">${i.cant}</td>                           <td style="text-align: right;">$${(i.precio * i.cant).toLocaleString('es-CL')}</td>
+                      </tr>
+                  `
+                    )
+                    .join('')}
+              </tbody>
+          </table>
+          <div class="linea-continua"></div>
+          <table>
+              <tr>
+                  <td class="text-end">SUBTOTAL:</td>
+                  <td class="text-end" style="width: 80px;">$${subtotalCalc.toLocaleString('es-CL')}</td>
+              </tr>
+              <tr>
+                  <td class="text-end">IVA INCLUIDO (19%):</td>
+                  <td class="text-end">$${ivaCalc.toLocaleString('es-CL')}</td>
+              </tr>
+              <tr class="fw-bold">
+                  <td class="text-end">TOTAL:</td>
+                  <td class="text-end">$${venta.total.toLocaleString('es-CL')}</td>
+              </tr>
+          </table>
+          <div class="linea-punteada"></div>
+          <div class="fw-bold text-uppercase">FORMAS DE PAGO:</div>
+          <div style="display: flex; justify-content: space-between;">
+              <span>${venta.metodoPago}:</span>
+              <span>$${(venta.pagoCon || venta.total).toLocaleString('es-CL')}</span>
+          </div>
+          ${
+            venta.vuelto > 0
+              ? `
+          <div style="display: flex; justify-content: space-between;" class="fw-bold">
+              <span>VUELTO:</span>
+              <span>$${venta.vuelto.toLocaleString('es-CL')}</span>
+          </div>
+          `
+              : ''
+          }
+          <div class="linea-punteada"></div>
+          <div class="text-center fw-bold" style="margin-top: 10px;">*** GRACIAS POR TU COMPRA ***</div>
+          <div class="text-center">www.rmstore.cl</div>
+          <script>
+              window.onload = function() {
+                  window.print();
+                  setTimeout(function() { window.close(); }, 500);
+              };
+          <\/script>
+      </body>
+      </html>
+    `;
+
+    ventanaImpresion.document.open();
+    ventanaImpresion.document.write(htmlTicket);
+    ventanaImpresion.document.close();
+  };
+
+  const reimprimirUltimoTicket = () => {
+    const ultimo = JSON.parse(localStorage.getItem('rmstore_ultimo_ticket'));
+    if (!ultimo) {
+      alert('No hay ningún ticket registrado recientemente en esta sesión.');
+      return;
+    }
+    imprimirTicketDirecto(ultimo);
+  };
+
+  const userEmail = sesion?.usuario?.correo || sesion?.email || 'vendedor@duoc.cl';
+  const userRol = sesion?.rol || 'Vendedor';
+
   return (
     <div className="admin-layout">
-      <AdminSidebar activo="pos" />
-      <main className="admin-main">
-        <header className="admin-header d-flex justify-content-between align-items-center gap-3 pe-3">
-        <h2 className="h4 fw-bold mb-0">Terminal POS - Punto de Venta</h2>
-        <div className="admin-user d-flex align-items-center ms-auto">
-            <span className="badge bg-light text-dark border px-3 py-2 fw-semibold fs-6 shadow-sm">
-            <i className="bi bi-person-circle me-2 text-danger"></i>
-            {sesion?.email}
+      {/* Sidebar */}
+      <AdminSidebar activo="pos"/>
+
+      {/* Contenido Principal con estilos directos para pantalla completa */}
+      <main
+        className="admin-main"
+        style={{ width: '100%', maxWidth: '100%', margin: 0, padding: '1.5rem', boxSizing: 'border-box' }}
+      >
+        <header className="admin-header d-flex justify-content-between align-items-center mb-3">
+          <div className="d-flex align-items-center gap-2">
+            <h2 className="h4 fw-bold mb-0">
+              <i className="bi bi-cart-check text-danger me-2"></i>Terminal POS
+            </h2>
+            <span className="badge bg-success" id="estado-caja-badge">
+              Caja Abierta
             </span>
-        </div>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <button
+              className="btn btn-outline-warning btn-sm fw-bold"
+              onClick={reimprimirUltimoTicket}
+            >
+              <i className="bi bi-printer me-1"></i>Reimprimir Ticket
+            </button>
+            <button
+              className="btn btn-outline-dark btn-sm fw-bold"
+              onClick={() => setShowCierre(true)}
+            >
+              <i className="bi bi-lock me-1"></i>Cierre de Caja
+            </button>
+            <span className="badge bg-danger px-3 py-2" id="badge-rol-vendedor">
+              {userRol}
+            </span>
+            <div className="admin-user fw-semibold" id="admin-user-email">
+              {userEmail}
+            </div>
+          </div>
         </header>
 
-        <section className="admin-content p-4">
-          <div className="row g-4">
-            {/* Catálogo Left */}
-            <div className="col-12 col-lg-7">
-              <div className="bg-white p-4 rounded-4 shadow-sm">
-                <div className="row g-2 mb-3">
-                  <div className="col-7">
+        <section className="admin-content w-100">
+          <div
+            className="pos-container"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 380px',
+              gap: '1.5rem',
+              width: '100%',
+              maxWidth: '100%'
+            }}
+          >
+            {/* COLUMNA IZQUIERDA: Catálogo de Productos */}
+            <div className="pos-catalog bg-white p-4 rounded-4 shadow-sm d-flex flex-column w-100">
+              <div className="row g-2 mb-3">
+                <div className="col-12 col-md-7">
+                  <div className="input-group">
+                    <span className="input-group-text bg-light border-end-0">
+                      <i className="bi bi-search"></i>
+                    </span>
                     <input
                       type="text"
-                      className="form-control"
-                      placeholder="Buscar por código o nombre..."
+                      className="form-control bg-light border-start-0 ps-0"
+                      placeholder="Buscar por código, barra o nombre..."
                       value={busqueda}
                       onChange={(e) => setBusqueda(e.target.value)}
                     />
                   </div>
-                  <div className="col-5">
-                    <select className="form-select" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
-                      <option value="Todos">Todas</option>
-                      <option value="Star Wars">Star Wars</option>
-                      <option value="Technic">Technic</option>
-                      <option value="Harry Potter">Harry Potter</option>
-                      <option value="City">City</option>
-                    </select>
-                  </div>
                 </div>
+                <div className="col-12 col-md-5">
+                  <select
+                    className="form-select bg-light"
+                    value={catFilter}
+                    onChange={(e) => setCatFilter(e.target.value)}
+                  >
+                    <option value="Todos">Todas las Categorías</option>
+                    <option value="Star Wars">Star Wars</option>
+                    <option value="Technic">Technic</option>
+                    <option value="Marvel">Marvel</option>
+                    <option value="Harry Potter">Harry Potter</option>
+                    <option value="Icons">Icons / Botánica</option>
+                    <option value="City">City</option>
+                  </select>
+                </div>
+              </div>
 
-                <div className="row row-cols-2 row-cols-md-3 g-3 overflow-auto" style={{ maxHeight: '60vh' }}>
-                  {filtrados.map(p => (
-                    <div className="col" key={p.id || p.codigo}>
-                      <div className="card h-100 p-2 shadow-sm border-0 text-center cursor-pointer" onClick={() => agregarAlPos(p)}>
-                        <img src={(p.imagenes && p.imagenes[0]) || p.imagen} alt={p.nombre} style={{ height: '70px', objectFit: 'contain' }} />
-                        <h6 className="small fw-bold text-truncate mt-2 mb-1">{p.nombre}</h6>
-                        <span className="text-danger fw-bold small">${Number(p.precio).toLocaleString('es-CL')}</span>
+              {/* Grilla de Productos expandida para 16:9 */}
+              <div
+                className="row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xxl-5 g-3 flex-grow-1 overflow-auto pe-1"
+                style={{ maxHeight: '65vh' }}
+              >
+                {filtrados.length === 0 ? (
+                  <div className="col-12 text-center text-muted py-5">
+                    <i className="bi bi-search fs-1 d-block mb-2"></i>
+                    No se encontraron productos coincidentes.
+                  </div>
+                ) : (
+                  filtrados.map((p) => {
+                    const stock = Number(p.stock) || 0;
+                    const id = p.id || p.codigo;
+                    const img =
+                      p.imagenes && p.imagenes.length > 0
+                        ? p.imagenes[0]
+                        : p.imagen || '/img/lego-default.png';
+                    const precioValido = isNaN(Number(p.precio)) ? 0 : Number(p.precio);
+
+                    return (
+                      <div className="col" key={id}>
+                        <div
+                          className={`card h-100 border-0 shadow-sm rounded-3 p-2 pos-product-card ${
+                            stock === 0 ? 'opacity-50' : ''
+                          }`}
+                          style={{ cursor: stock > 0 ? 'pointer' : 'default' }}
+                          onClick={() => stock > 0 && agregarAlPos(p)}
+                        >
+                          <div
+                            className="bg-light rounded-3 p-2 text-center mb-2 position-relative"
+                            style={{ height: '100px' }}
+                          >
+                            <img
+                              src={img}
+                              alt={p.nombre || 'Producto'}
+                              style={{
+                                maxHeight: '80px',
+                                maxWidth: '100%',
+                                objectFit: 'contain'
+                              }}
+                            />
+                            <span
+                              className={`badge ${
+                                stock > 0 ? 'bg-success' : 'bg-danger'
+                              } position-absolute top-0 end-0 m-1`}
+                            >
+                              Stock: {stock}
+                            </span>
+                          </div>
+                          <h6
+                            className="fw-bold small text-dark text-truncate mb-1"
+                            title={p.nombre || 'Producto sin nombre'}
+                          >
+                            {p.nombre || 'Producto sin nombre'}
+                          </h6>
+                          <p className="fw-bold text-danger mb-0 small">
+                            ${precioValido.toLocaleString('es-CL')}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 
-            {/* Ticket Right */}
-            <div className="col-12 col-lg-5">
-              <div className="bg-white p-4 rounded-4 shadow-sm">
-                <h5 className="fw-bold mb-3">Orden de Venta</h5>
+            {/* COLUMNA DERECHA: Ticket / Carrito y Cobro */}
+            <div className="pos-ticket bg-white p-4 rounded-4 shadow-sm d-flex flex-column justify-content-between">
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                  <h5 className="fw-bold mb-0">
+                    <i className="bi bi-receipt me-2"></i>Orden de Venta
+                  </h5>
+                  <button className="btn btn-sm btn-outline-danger" onClick={limpiarPos}>
+                    <i className="bi bi-trash me-1"></i>Limpiar
+                  </button>
+                </div>
 
+                {/* Cliente */}
                 <div className="mb-3">
-                  <label className="form-label small fw-semibold text-muted">Cliente</label>
+                  <label className="form-label small fw-semibold text-muted mb-1">
+                    Cliente Asociado
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    placeholder="RUN / Nombre"
+                    placeholder="RUN / Nombre / Correo (Opcional)"
                     value={clienteRun}
                     onChange={(e) => setClienteRun(e.target.value)}
                   />
                 </div>
 
-                <div className="overflow-auto mb-3" style={{ maxHeight: '200px' }}>
-                  {carritoPos.map(i => (
-                    <div key={i.id} className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                      <div>
-                        <span className="d-block small fw-bold">{i.nombre}</span>
-                        <span className="text-muted small">${i.precio.toLocaleString('es-CL')}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <button className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => cambiarCantPos(i.id, -1)}>-</button>
-                        <span className="fw-bold small">{i.cant}</span>
-                        <button className="btn btn-sm btn-outline-secondary py-0 px-2" onClick={() => cambiarCantPos(i.id, 1)}>+</button>
-                        <span className="fw-bold small text-danger ms-2">${(i.precio * i.cant).toLocaleString('es-CL')}</span>
-                      </div>
+                {/* Lista de Ítems */}
+                <div
+                  className="ticket-items overflow-auto mb-3 pe-1"
+                  style={{ maxHeight: '200px' }}
+                >
+                  {carritoPos.length === 0 ? (
+                    <div className="text-center text-muted py-4">
+                      <i className="bi bi-cart-x fs-2 d-block mb-1"></i>Boleta vacía.
                     </div>
-                  ))}
+                  ) : (
+                    carritoPos.map((item) => {
+                      const sub = item.precio * item.cant;
+                      return (
+                        <div
+                          key={item.id}
+                          className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom"
+                        >
+                          <div style={{ maxWidth: '160px' }}>
+                            <h6 className="fw-bold small mb-0 text-truncate">{item.nombre}</h6>
+                            <span className="text-muted small">
+                              ${item.precio.toLocaleString('es-CL')}
+                            </span>
+                          </div>
+                          <div className="d-flex align-items-center gap-2">
+                            <div className="btn-group btn-group-sm">
+                              <button
+                                className="btn btn-outline-secondary py-0 px-2"
+                                onClick={() => cambiarCantPos(item.id, -1)}
+                              >
+                                -
+                              </button>
+                              <span className="btn btn-light disabled py-0 px-2 fw-bold text-dark">
+                                {item.cant}
+                              </span>
+                              <button
+                                className="btn btn-outline-secondary py-0 px-2"
+                                onClick={() => cambiarCantPos(item.id, 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span
+                              className="fw-bold small text-dark"
+                              style={{ minWidth: '55px', textAlign: 'right' }}
+                            >
+                              ${sub.toLocaleString('es-CL')}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* Totales, Efectivo y Vuelto */}
+              <div className="border-top pt-3">
+                <div className="d-flex justify-content-between text-muted small mb-1">
+                  <span>Subtotal (Neto):</span>
+                  <span>${subtotalNeto.toLocaleString('es-CL')}</span>
+                </div>
+                <div className="d-flex justify-content-between text-muted small mb-2">
+                  <span>IVA (19%):</span>
+                  <span>${ivaCalculado.toLocaleString('es-CL')}</span>
+                </div>
+                <div className="d-flex justify-content-between fw-bold fs-4 text-dark mb-3">
+                  <span>TOTAL:</span>
+                  <span className="text-danger">${totalVentaActual.toLocaleString('es-CL')}</span>
                 </div>
 
-                <div className="border-top pt-3">
-                  <div className="d-flex justify-content-between fs-4 fw-bold mb-3">
-                    <span>TOTAL:</span>
-                    <span className="text-danger">${totalVenta.toLocaleString('es-CL')}</span>
+                {/* Pago en Efectivo y Vuelto */}
+                <div className="row g-2 mb-3">
+                  <div className="col-6">
+                    <label className="form-label small fw-semibold text-muted mb-1">
+                      Método de Pago
+                    </label>
+                    <select
+                      className="form-select form-select-sm fw-bold"
+                      value={metodoPago}
+                      onChange={(e) => setMetodoPago(e.target.value)}
+                    >
+                      <option value="Efectivo">💵 Efectivo</option>
+                      <option value="Debito">💳 Débito/Crédito</option>
+                      <option value="Transferencia">📲 Transferencia</option>
+                    </select>
                   </div>
-
-                  <div className="row g-2 mb-3">
-                    <div className="col-6">
-                      <select className="form-select form-select-sm" value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)}>
-                        <option value="Efectivo">💵 Efectivo</option>
-                        <option value="Debito">💳 Débito/Crédito</option>
-                      </select>
-                    </div>
-                    {metodoPago === 'Efectivo' && (
-                      <div className="col-6">
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          placeholder="Monto entregado"
-                          value={montoPagaCon}
-                          onChange={(e) => setMontoPagaCon(e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </div>
-
                   {metodoPago === 'Efectivo' && (
-                    <div className="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 mb-3">
-                      <span className="small fw-semibold text-muted">VUELTO:</span>
-                      <span className="fw-bold text-success">${vuelto.toLocaleString('es-CL')}</span>
+                    <div className="col-6">
+                      <label className="form-label small fw-semibold text-muted mb-1">
+                        Monto Recibido
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control form-control-sm fw-bold"
+                        placeholder="$0"
+                        value={montoPagaCon}
+                        onChange={(e) => setMontoPagaCon(e.target.value)}
+                      />
                     </div>
                   )}
-
-                  <button className="btn btn-danger btn-lg w-100 fw-bold shadow-sm" onClick={handleCompletarVenta}>
-                    COMPLETAR VENTA
-                  </button>
                 </div>
+
+                {metodoPago === 'Efectivo' && (
+                  <div className="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 mb-3">
+                    <span className="fw-semibold text-muted small">VUELTO A ENTREGAR:</span>
+                    <span className="fw-bold fs-5 text-success">
+                      ${vueltoCalculado.toLocaleString('es-CL')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Botón Ejecutar Venta */}
+                <button
+                  className="btn btn-danger btn-lg w-100 fw-bold shadow-sm py-2"
+                  onClick={procesarVentaPos}
+                >
+                  <i className="bi bi-check-circle-fill me-2"></i>COMPLETAR VENTA
+                </button>
               </div>
             </div>
           </div>
         </section>
       </main>
+
+      {/* Modal Apertura de Caja */}
+      {showApertura && (
+        <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 border-0">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="fw-bold">
+                  <i className="bi bi-door-open text-danger me-2"></i>Apertura de Caja (Turno
+                  POS)
+                </h5>
+              </div>
+              <div className="modal-body p-4">
+                <p className="text-muted small">
+                  Ingresa el monto de efectivo base (sencillo) con el que inicias la jornada
+                  laboral.
+                </p>
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Fondo Inicial ($):</label>
+                  <input
+                    type="number"
+                    className="form-control form-control-lg fw-bold"
+                    placeholder="Ej: 50000"
+                    value={montoApertura}
+                    onChange={(e) => setMontoApertura(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-danger fw-bold rounded-3 w-100 py-2"
+                  onClick={handleConfirmarApertura}
+                >
+                  ABRIR CAJA
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Cierre de Caja (Arqueo a Ciegas) */}
+      {showCierre && (
+        <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 border-0">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="fw-bold">
+                  <i className="bi bi-lock text-danger me-2"></i>Arqueo de Caja (Cierre de
+                  Turno)
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowCierre(false)}
+                ></button>
+              </div>
+              <div className="modal-body p-4">
+                <div className="alert alert-warning small mb-3">
+                  <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                  <strong>Arqueo a Ciegas:</strong> Ingresa el conteo físico del efectivo
+                  existente. El sistema no revela el monto esperado por políticas de seguridad.
+                </div>
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Efectivo Físico Contado ($):</label>
+                  <input
+                    type="number"
+                    className="form-control form-control-lg fw-bold"
+                    placeholder="Monto contado en caja..."
+                    value={montoCierreFisico}
+                    onChange={(e) => setMontoCierreFisico(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-dark fw-bold rounded-3 w-100 py-2"
+                  onClick={handleConfirmarCierre}
+                >
+                  REGISTRAR Y CERRAR TURNO
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Ticket / Comprobante de Venta */}
+      {showTicketModal && ultimoTicket && (
+        <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 border-0">
+              <div className="modal-body text-center p-4">
+                <div className="text-success display-1 mb-2">
+                  <i className="bi bi-check-circle-fill"></i>
+                </div>
+                <h4 className="fw-bold mb-1">¡Venta Registrada!</h4>
+                <p className="text-muted small mb-3">Stock actualizado en tiempo real.</p>
+
+                {/* Formato Ticket en pantalla */}
+                <div className="p-3 rounded-3 ticket-pos text-start mb-3 small font-monospace bg-light border">
+                  <div className="text-center fw-bold text-uppercase fs-6">
+                    RMSTORE COLECCIONABLES
+                  </div>
+                  <div className="text-center fw-bold">R.U.T.: 77.123.456-K</div>
+                  <div className="text-center fw-bold mt-1 text-uppercase">
+                    BOLETA ELECTRÓNICA: {ultimoTicket.numBoleta}
+                  </div>
+                  <div className="border-top border-dashed my-2"></div>
+                  <div>FECHA: {ultimoTicket.fecha}</div>
+                  <div>CAJERO: {(ultimoTicket.vendedor || 'Vendedor').split('@')[0]}</div>
+                  <div>CLIENTE: {ultimoTicket.cliente}</div>
+                  <div className="border-top border-dashed my-2"></div>
+                  <table className="w-100">
+                    <thead>
+                      <tr className="fw-bold">
+                        <th style={{ textAlign: 'left', width: '55%' }}>ITEM</th>
+                        <th style={{ textAlign: 'center', width: '15%' }}>CANT</th>
+                        <th style={{ textAlign: 'right', width: '30%' }}>TOTAL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ultimoTicket.items.map((i, idx) => (
+                        <tr key={idx}>
+                          <td style={{ textAlign: 'left' }}>{i.nombre}</td>
+                          <td style={{ textAlign: 'center' }}>{i.cant}</td>
+                          <td style={{ textAlign: 'right' }}>
+                            ${(i.precio * i.cant).toLocaleString('es-CL')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="border-top my-2"></div>
+                  <table className="w-100">
+                    <tbody>
+                      <tr>
+                        <td style={{ textAlign: 'right' }}>SUBTOTAL:</td>
+                        <td style={{ textAlign: 'right', width: '90px' }}>
+                          ${Math.round(ultimoTicket.total / 1.19).toLocaleString('es-CL')}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ textAlign: 'right' }}>IVA INCLUIDO (19%):</td>
+                        <td style={{ textAlign: 'right' }}>
+                          $
+                          {(
+                            ultimoTicket.total - Math.round(ultimoTicket.total / 1.19)
+                          ).toLocaleString('es-CL')}
+                        </td>
+                      </tr>
+                      <tr className="fw-bold fs-6">
+                        <td style={{ textAlign: 'right' }}>TOTAL:</td>
+                        <td style={{ textAlign: 'right' }}>
+                          ${ultimoTicket.total.toLocaleString('es-CL')}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="border-top border-dashed my-2"></div>
+                  <div className="fw-bold text-uppercase">FORMAS DE PAGO:</div>
+                  <div className="d-flex justify-content-between">
+                    <span>{ultimoTicket.metodoPago}:</span>
+                    <span>
+                      ${(ultimoTicket.pagoCon || ultimoTicket.total).toLocaleString('es-CL')}
+                    </span>
+                  </div>
+                  {ultimoTicket.vuelto > 0 && (
+                    <div className="d-flex justify-content-between fw-bold">
+                      <span>VUELTO:</span>
+                      <span>${ultimoTicket.vuelto.toLocaleString('es-CL')}</span>
+                    </div>
+                  )}
+                  <div className="border-top border-dashed my-2"></div>
+                  <div className="text-center fw-bold mt-2">*** GRACIAS POR TU COMPRA ***</div>
+                  <div className="text-center">www.rmstore.cl</div>
+                </div>
+
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary fw-bold flex-grow-1"
+                    onClick={() => imprimirTicketDirecto(ultimoTicket)}
+                  >
+                    <i className="bi bi-printer me-1"></i>Imprimir Ticket
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger fw-bold flex-grow-1"
+                    onClick={() => {
+                      setShowTicketModal(false);
+                      limpiarPos();
+                    }}
+                  >
+                    Nueva Venta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
