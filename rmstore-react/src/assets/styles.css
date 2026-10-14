@@ -1078,3 +1078,16 @@ main.flex-grow-1 {
     margin-right: auto !important;
 }
 
+
+/* Transición de desvanecimiento suave para el Hero Banner */
+.hero-fade {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.hero-fade-in {
+  opacity: 1;
+}
+
+.hero-fade-out {
+  opacity: 0;
+}

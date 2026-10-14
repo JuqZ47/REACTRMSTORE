@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import { descontarStock } from '../../services/storageService';
+import { useAuth } from '../../context/AuthContext';
 
 const Carrito = () => {
   const {
     carrito,
     cambiarCantidad,
     eliminarDelCarrito,
-    vaciarCarrito,
     aplicarCupon,
     subtotal,
     montoDescuento,
@@ -16,8 +15,12 @@ const Carrito = () => {
     descuentoActivo
   } = useCart();
 
+  const { sesion } = useAuth();
+  const navigate = useNavigate();
+
   const [inputCupon, setInputCupon] = useState('');
   const [msgCupon, setMsgCupon] = useState({ texto: '', esExito: false });
+  const [mostrarModalAuth, setMostrarModalAuth] = useState(false);
 
   const handleAplicarCupon = () => {
     if (!inputCupon.trim()) return;
@@ -25,14 +28,26 @@ const Carrito = () => {
     setMsgCupon({ texto: res.mensaje, esExito: res.exito });
   };
 
-  const handlePagar = () => {
+  const handleIniciarPago = () => {
     if (carrito.length === 0) return;
 
-    // Descontar inventario en localStorage
-    descontarStock(carrito);
+    if (sesion) {
+      // Si el usuario ya está autenticado, va directo a Checkout
+      navigate('/checkout');
+    } else {
+      // Si no ha iniciado sesión, abrimos el modal de opción
+      setMostrarModalAuth(true);
+    }
+  };
 
-    alert("¡Compra realizada con éxito en RMSTORE! El inventario ha sido actualizado.");
-    vaciarCarrito();
+  const handleContinuarInvitado = () => {
+    setMostrarModalAuth(false);
+    navigate('/checkout');
+  };
+
+  const handleIrALogin = () => {
+    setMostrarModalAuth(false);
+    navigate('/login');
   };
 
   return (
@@ -67,29 +82,50 @@ const Carrito = () => {
                   </thead>
                   <tbody>
                     {carrito.map(item => {
-                      const totalLinea = item.precio * item.cantidad;
+                      const cantidadActual = item.cant || 1;
+                      const precioNum = Number(item.precio) || 0;
+                      const totalLinea = precioNum * cantidadActual;
+
                       return (
                         <tr key={item.id}>
                           <td>
                             <div className="d-flex align-items-center gap-3">
-                              <img src={item.imagen} alt={item.nombre} style={{ width: '45px', height: '45px', objectFit: 'contain' }} />
+                              <img 
+                                src={item.imagen || '/img/lego-default.png'} 
+                                alt={item.nombre} 
+                                style={{ width: '45px', height: '45px', objectFit: 'contain' }} 
+                              />
                               <div>
                                 <strong className="d-block text-dark small">{item.nombre}</strong>
                                 <span className="text-muted small">{item.id}</span>
                               </div>
                             </div>
                           </td>
-                          <td className="small">${Number(item.precio).toLocaleString('es-CL')}</td>
+                          <td className="small">${precioNum.toLocaleString('es-CL')}</td>
                           <td className="text-center">
                             <div className="btn-group btn-group-sm">
-                              <button className="btn btn-outline-secondary px-2" onClick={() => cambiarCantidad(item.id, -1)}>-</button>
-                              <span className="btn btn-light px-2 disabled fw-bold text-dark">{item.cantidad}</span>
-                              <button className="btn btn-outline-secondary px-2" onClick={() => cambiarCantidad(item.id, 1)}>+</button>
+                              <button 
+                                className="btn btn-outline-secondary px-2" 
+                                onClick={() => cambiarCantidad(item.id, cantidadActual - 1)}
+                              >
+                                -
+                              </button>
+                              <span className="btn btn-light px-2 disabled fw-bold text-dark">{cantidadActual}</span>
+                              <button 
+                                className="btn btn-outline-secondary px-2" 
+                                onClick={() => cambiarCantidad(item.id, cantidadActual + 1)}
+                              >
+                                +
+                              </button>
                             </div>
                           </td>
                           <td className="fw-bold small text-dark">${totalLinea.toLocaleString('es-CL')}</td>
                           <td className="text-end">
-                            <button className="btn btn-outline-danger btn-sm border-0" onClick={() => eliminarDelCarrito(item.id)} title="Quitar">
+                            <button 
+                              className="btn btn-outline-danger btn-sm border-0" 
+                              onClick={() => eliminarDelCarrito(item.id)} 
+                              title="Quitar"
+                            >
                               <i className="bi bi-trash"></i>
                             </button>
                           </td>
@@ -146,9 +182,53 @@ const Carrito = () => {
                 )}
               </div>
 
-              <button className="btn btn-success btn-lg w-100 fw-bold shadow-sm py-2 rounded-3" onClick={handlePagar}>
+              <button 
+                className="btn btn-success btn-lg w-100 fw-bold shadow-sm py-2 rounded-3" 
+                onClick={handleIniciarPago}
+              >
                 <i className="bi bi-credit-card-fill me-2"></i>PAGAR AHORA
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CONTINUAR COMO INVITADO O INICIAR SESIÓN */}
+      {mostrarModalAuth && (
+        <div 
+          className="modal fade show d-block" 
+          tabIndex="-1" 
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 border-0 shadow">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold">¿Cómo deseas continuar?</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => setMostrarModalAuth(false)}
+                ></button>
+              </div>
+              <div className="modal-body text-center py-4">
+                <p className="text-muted mb-4">
+                  Inicia sesión para usar tus datos guardados o continúa directamente como invitado para completar tu pedido.
+                </p>
+                <div className="d-grid gap-3">
+                  <button 
+                    className="btn btn-danger btn-lg fw-bold rounded-3" 
+                    onClick={handleIrALogin}
+                  >
+                    <i className="bi bi-person-fill me-2"></i>Iniciar Sesión
+                  </button>
+                  <button 
+                    className="btn btn-outline-secondary btn-lg fw-bold rounded-3" 
+                    onClick={handleContinuarInvitado}
+                  >
+                    <i className="bi bi-bag-check-fill me-2"></i>Continuar como Invitado
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

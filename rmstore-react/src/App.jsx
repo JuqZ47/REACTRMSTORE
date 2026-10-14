@@ -20,6 +20,9 @@ import Nosotros from './pages/public/Nosotros';
 import Blogs from './pages/public/Blogs';
 import DetalleBlog from './pages/public/DetalleBlog';
 import Contacto from './pages/public/Contacto';
+import Checkout from './pages/public/Checkout';
+import PagoExitoso from './pages/public/PagoExitoso';
+import PagoError from './pages/public/PagoError';
 
 // Vistas Admin / POS
 import DashboardAdmin from './pages/admin/DashboardAdmin';
@@ -39,6 +42,7 @@ function App() {
             <Route path="/" element={<PublicLayout />}>
               <Route index element={<Home />} />
               <Route path="productos" element={<Productos />} />
+              <Route path="/categorias" element={<Productos />} />
               <Route path="detalle-producto/:id" element={<DetalleProducto />} />
               <Route path="carrito" element={<Carrito />} />
               <Route path="login" element={<Login />} />
@@ -47,6 +51,9 @@ function App() {
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/blogs/:id" element={<DetalleBlog />} />
               <Route path="/contacto" element={<Contacto />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/pago-exitoso" element={<PagoExitoso />} />
+              <Route path="/pago-error" element={<PagoError />} />
             </Route>
 
             {/* Rutas Protegidas de Administración (ADMIN) */}

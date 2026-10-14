@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../../components/store/ProductCard';
-import InspireCarousel from '../../components/store/InspireCarousel'; // Importación corregida
+import InspireCarousel from '../../components/store/InspireCarousel';
 import { getProductosStorage } from '../../services/storageService';
 import { useCart } from '../../context/CartContext';
-import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
   const [pestanaActiva, setPestanaActiva] = useState('Novedades');
   const [spotlightActivo, setSpotlightActivo] = useState('ferrari');
   const [heroIndex, setHeroIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false); // Estado para controlar la animación de transición
   const { agregarAlCarrito } = useCart();
   const navigate = useNavigate();
 
@@ -46,12 +46,24 @@ const Home = () => {
 
   const heroActual = heroSlides[heroIndex];
 
+  // Transición suave entre diapositivas (Fade Out -> Cambio -> Fade In)
+  const cambiarSlideConTransicion = (nuevoIndice) => {
+    if (isFading) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setHeroIndex(nuevoIndice);
+      setIsFading(false);
+    }, 350);
+  };
+
   const siguienteHero = () => {
-    setHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    const siguienteIndex = (heroIndex + 1) % heroSlides.length;
+    cambiarSlideConTransicion(siguienteIndex);
   };
 
   const anteriorHero = () => {
-    setHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    const anteriorIndex = (heroIndex - 1 + heroSlides.length) % heroSlides.length;
+    cambiarSlideConTransicion(anteriorIndex);
   };
 
   // Filtrado de productos para el estante "Los mejores sets para ti"
@@ -66,7 +78,7 @@ const Home = () => {
 
   const setsMostrados = obtenerSetsEstante();
 
-  // Datos para el Spotlight interactivo (Sección inferior)
+  // Datos para el Spotlight interactivo
   const datosSpotlight = {
     ferrari: {
       titulo: 'Lego Technic - Ferrari Daytona SP3',
@@ -88,54 +100,65 @@ const Home = () => {
 
   return (
     <div className="container py-4">
-      {/* 1. HERO BANNER DINÁMICO */}
+      {/* 1. HERO BANNER DINÁMICO CON TRANSICIÓN SUAVE */}
       <section className="position-relative mb-5 rounded-4 overflow-hidden shadow-lg bg-dark text-white" style={{ minHeight: '380px' }}>
-        {heroActual.esVideo ? (
-          <video
-            key={heroActual.videoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{ objectFit: 'cover', opacity: 0.4, zIndex: 0 }}
-          >
-            <source src={heroActual.videoUrl} type="video/mp4" />
-          </video>
-        ) : (
-          <img
-            key={heroActual.bgImg}
-            src={heroActual.bgImg}
-            alt={heroActual.tituloLine2}
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{ objectFit: 'cover', opacity: 0.35, zIndex: 0 }}
-          />
-        )}
-
+        
+        {/* Contenedor animado de contenido y multimedia */}
         <div 
-          className="position-absolute top-0 start-0 w-100 h-100" 
-          style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%)', zIndex: 1 }} 
-        />
+          style={{ 
+            opacity: isFading ? 0 : 1, 
+            transition: 'opacity 0.35s ease-in-out',
+            minHeight: '380px' 
+          }}
+          className="w-100 h-100 position-relative"
+        >
+          {heroActual.esVideo ? (
+            <video
+              key={heroActual.videoUrl}
+              autoPlay
+              muted
+              playsInline
+              onEnded={siguienteHero} // 👈 Pasa automáticamente al siguiente video al terminar
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{ objectFit: 'cover', opacity: 0.4, zIndex: 0 }}
+            >
+              <source src={heroActual.videoUrl} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              key={heroActual.bgImg}
+              src={heroActual.bgImg}
+              alt={heroActual.tituloLine2}
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{ objectFit: 'cover', opacity: 0.35, zIndex: 0 }}
+            />
+          )}
 
-        <div className="position-relative p-4 p-md-5 d-flex flex-column justify-content-center h-100" style={{ zIndex: 2, minHeight: '380px' }}>
-          <div className="col-12 col-md-7">
-            <span className={`badge ${heroActual.badgeBg} mb-3 px-3 py-2 fw-bold text-uppercase`}>
-              {heroActual.badge}
-            </span>
-            <h1 className="display-4 fw-black text-uppercase mb-3 line-height-sm">
-              {heroActual.tituloLine1}<br />
-              <span className="text-white">{heroActual.tituloLine2}</span>
-            </h1>
-            <p className="lead mb-4 opacity-90 small">
-              {heroActual.desc}
-            </p>
-            <Link to={heroActual.btnLink} className="btn btn-danger btn-lg fw-bold shadow px-4 py-2 text-uppercase">
-              {heroActual.btnText} &rarr;
-            </Link>
+          <div 
+            className="position-absolute top-0 start-0 w-100 h-100" 
+            style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%)', zIndex: 1 }} 
+          />
+
+          <div className="position-relative p-4 p-md-5 d-flex flex-column justify-content-center h-100" style={{ zIndex: 2, minHeight: '380px' }}>
+            <div className="col-12 col-md-7">
+              <span className={`badge ${heroActual.badgeBg} mb-3 px-3 py-2 fw-bold text-uppercase`}>
+                {heroActual.badge}
+              </span>
+              <h1 className="display-4 fw-black text-uppercase mb-3 line-height-sm">
+                {heroActual.tituloLine1}<br />
+                <span className="text-white">{heroActual.tituloLine2}</span>
+              </h1>
+              <p className="lead mb-4 opacity-90 small">
+                {heroActual.desc}
+              </p>
+              <Link to={heroActual.btnLink} className="btn btn-danger btn-lg fw-bold shadow px-4 py-2 text-uppercase">
+                {heroActual.btnText} &rarr;
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* FLECHAS DE NAVEGACIÓN LATERALES (ESTILO MINIMALISTA) */}
+        {/* FLECHAS DE NAVEGACIÓN LATERALES */}
         <button
           onClick={anteriorHero}
           className="btn border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center text-white"
@@ -169,7 +192,7 @@ const Home = () => {
         </button>
       </section>
 
-{/* 2. CATEGORÍAS RÁPIDAS CIRCULARES (MÁS GRANDES) */}
+      {/* 2. CATEGORÍAS RÁPIDAS CIRCULARES */}
       <section className="mb-5">
         <div className="d-flex justify-content-center align-items-center flex-wrap gap-3 gap-md-4 text-center">
           {[
@@ -309,14 +332,11 @@ const Home = () => {
           </p>
         </div>
 
-        {/* CONTENEDOR ROW PRINCIPAL QUE PONE LAS DOS COLUMNAS DE LADO Y LADO */}
         <div className="row g-4 align-items-center">
-          {/* Columna Izquierda: Carrusel Automático */}
           <div className="col-12 col-md-6">
             <InspireCarousel />
           </div>
 
-          {/* Columna Derecha: Ventajas y Dudas */}
           <div className="col-12 col-md-6">
             <div className="row g-3">
               <div className="col-6">

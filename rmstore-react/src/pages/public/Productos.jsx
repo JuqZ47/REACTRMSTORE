@@ -9,6 +9,9 @@ const Productos = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { agregarAlCarrito } = useCart();
 
+  // Estado para la alerta flotante de confirmación
+  const [notificacion, setNotificacion] = useState({ visible: false, mensaje: '', producto: '' });
+
   // Filtros locales
   const categoriaURL = searchParams.get('categoria') || 'Todos';
   const [categoriaSel, setCategoriaSel] = useState(categoriaURL);
@@ -38,17 +41,32 @@ const Productos = () => {
     }
   };
 
+  // Manejar adición al carrito con notificación emergente
+  const handleAgregarAlCarrito = (prod) => {
+    const res = agregarAlCarrito(prod.id || prod.codigo, 1);
+
+    if (res?.exito) {
+      setNotificacion({
+        visible: true,
+        mensaje: '¡Producto agregado al carrito!',
+        producto: prod.nombre
+      });
+
+      // Ocultar notificación tras 2.5 segundos
+      setTimeout(() => {
+        setNotificacion({ visible: false, mensaje: '', producto: '' });
+      }, 2500);
+    }
+  };
+
   // Lógica de Filtrado y Ordenamiento
   let productosFiltrados = productos.filter((p) => {
-    // Omite automáticamente productos vacíos o corruptos (sin nombre)
     if (!p || !p.nombre || p.nombre.trim() === '') return false;
 
-    // Filtro Categoría
     const pasaCategoria =
       categoriaSel === 'Todos' ||
       (p.categoria && p.categoria.toLowerCase() === categoriaSel.toLowerCase());
 
-    // Filtro Rango de Precio
     let pasaPrecio = true;
     const precio = Number(p.precio) || 0;
     if (rangoPrecio === 'bajo') pasaPrecio = precio < 50000;
@@ -68,7 +86,29 @@ const Productos = () => {
   }
 
   return (
-    <main className="container my-4 my-md-5">
+    <main className="container my-4 my-md-5 position-relative">
+      
+      {/* NOTIFICACIÓN FLOTANTE (TOAST DE CONFIRMACIÓN) */}
+      {notificacion.visible && (
+        <div 
+          className="position-fixed top-0 end-0 p-3" 
+          style={{ zIndex: 1080, marginTop: '70px' }}
+        >
+          <div className="alert alert-success border-0 shadow-lg d-flex align-items-center gap-3 rounded-4 py-3 px-4 text-white bg-success">
+            <i className="bi bi-cart-check-fill fs-3"></i>
+            <div>
+              <strong className="d-block">{notificacion.mensaje}</strong>
+              <small className="opacity-90">{notificacion.producto}</small>
+            </div>
+            <button 
+              type="button" 
+              className="btn-close btn-close-white ms-auto" 
+              onClick={() => setNotificacion({ visible: false, mensaje: '', producto: '' })}
+            ></button>
+          </div>
+        </div>
+      )}
+
       {/* Encabezado */}
       <div className="text-center mb-4">
         <h1 className="h2 fw-extrabold text-dark mb-1" style={{ fontWeight: 800 }}>
@@ -140,14 +180,14 @@ const Productos = () => {
         </div>
       </div>
 
-      {/* Grid de Productos (3 columnas en desktop) */}
+      {/* Grid de Productos */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {productosFiltrados.length > 0 ? (
           productosFiltrados.map((prod) => (
             <ProductCard
               key={prod.id || prod.codigo}
               producto={prod}
-              onAddToCart={agregarAlCarrito}
+              onAddToCart={() => handleAgregarAlCarrito(prod)}
             />
           ))
         ) : (
