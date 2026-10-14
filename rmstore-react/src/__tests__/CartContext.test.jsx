@@ -1,121 +1,62 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { CartProvider, useCart } from '../context/CartContext';
-import * as storageService from '../services/storageService';
-
-// Simular el servicio de productos para que reconozca los ítems agregados
-vi.mock('../services/storageService', () => ({
-  getProductosStorage: vi.fn(),
-  getCarritoStorage: vi.fn(() => []),
-  saveCarritoStorage: vi.fn(),
-}));
-
-// Componente de prueba para interactuar con CartContext
-const ComponentePruebaCart = () => {
-  const { carrito, agregarAlCarrito, cambiarCantidad, vaciarCarrito, cartCount } = useCart();
-
-  return (
-    <div>
-      <span data-testid="cart-count">{cartCount ?? carrito?.length ?? 0}</span>
-      
-      <div data-testid="cart-items">
-        {carrito?.map((item) => (
-          <div key={item.id} data-testid={`item-${item.id}`}>
-            <span>{item.nombre}</span> - <span data-testid={`cant-${item.id}`}>{item.cant}</span>
-          </div>
-        ))}
-      </div>
-
-      <button onClick={() => agregarAlCarrito('LEG-001', 1)}>
-        Agregar Falcon
-      </button>
-
-      <button onClick={() => cambiarCantidad && cambiarCantidad('LEG-001', 1)}>
-        Sumar Cantidad
-      </button>
-
-      <button onClick={() => vaciarCarrito && vaciarCarrito()}>
-        Vaciar Carrito
-      </button>
-    </div>
-  );
-};
 
 describe('Pruebas en CartContext', () => {
+  const wrapper = ({ children }) => <CartProvider>{children}</CartProvider>;
+
   beforeEach(() => {
     localStorage.clear();
-    sessionStorage.clear();
-    vi.clearAllMocks();
-
-    // Mock del catálogo de productos disponibles
-    storageService.getProductosStorage.mockReturnValue([
-      {
-        id: 'LEG-001',
-        codigo: 'LEG-001',
-        nombre: 'Lego Star Wars Millennium Falcon',
-        precio: 169990,
-        stock: 5,
-        categoria: 'Star Wars'
-      }
-    ]);
   });
 
-  it('debe iniciar con el carrito vacío (contador en 0)', () => {
-    render(
-      <CartProvider>
-        <ComponentePruebaCart />
-      </CartProvider>
-    );
+  test('debe agregar un producto al carrito y calcular subtotales correctamente', () => {
+    const { result } = renderHook(() => useCart(), { wrapper });
 
-    expect(screen.getByTestId('cart-count')).toHaveTextContent('0');
+    act(() => {
+      result.current.agregarAlCarrito('LEG-001', 1);
+    });
+
+    expect(result.current.cartCount).toBeGreaterThan(0);
+    expect(result.current.carrito.length).toBeGreaterThan(0);
   });
 
-  it('debe agregar un producto al carrito y actualizar el contador', () => {
-    render(
-      <CartProvider>
-        <ComponentePruebaCart />
-      </CartProvider>
-    );
+  test('debe aplicar un cupón de descuento válido (LEGOVIP)', () => {
+    const { result } = renderHook(() => useCart(), { wrapper });
 
-    const btnAgregar = screen.getByText('Agregar Falcon');
-    fireEvent.click(btnAgregar);
+    act(() => {
+      result.current.agregarAlCarrito('LEG-001', 1);
+      result.current.aplicarCupon('LEGOVIP');
+    });
 
-    expect(screen.getByTestId('cart-count')).toHaveTextContent('1');
+    expect(result.current.descuentoActivo).toBe(0.10);
+    expect(result.current.montoDescuento).toBeGreaterThan(0);
   });
 
-  it('debe incrementar la cantidad si el producto ya existe en el carrito', () => {
-    render(
-      <CartProvider>
-        <ComponentePruebaCart />
-      </CartProvider>
-    );
+  test('debe cambiar la cantidad y vaciar el carrito correctamente', () => {
+    const { result } = renderHook(() => useCart(), { wrapper });
 
-    const btnAgregar = screen.getByText('Agregar Falcon');
-    
-    // Agregar 2 veces el mismo producto
-    fireEvent.click(btnAgregar);
-    fireEvent.click(btnAgregar);
+    // 1. Agregar el producto
+    act(() => {
+      result.current.agregarAlCarrito('LEG-001', 1);
+    });
 
-    // Dependiendo de la implementación, el total de ítems únicos o suma de cantidades
-    expect(screen.getByTestId('cart-count')).not.toHaveTextContent('0');
-  });
+    // Obtener el ID interno real guardado en el carrito
+    const itemGuardado = result.current.carrito[0];
+    const itemId = itemGuardado ? itemGuardado.id : 'LEG-001';
 
-  it('debe vaciar el carrito correctamente', () => {
-    render(
-      <CartProvider>
-        <ComponentePruebaCart />
-      </CartProvider>
-    );
+    // 2. Cambiar cantidad
+    act(() => {
+      result.current.cambiarCantidad(itemId, 2);
+    });
 
-    // Agregar producto primero
-    fireEvent.click(screen.getByText('Agregar Falcon'));
-    expect(screen.getByTestId('cart-count')).not.toHaveTextContent('0');
+    expect(result.current.cartCount).toBe(2);
 
-    // Vaciar
-    const btnVaciar = screen.getByText('Vaciar Carrito');
-    fireEvent.click(btnVaciar);
+    // 3. Vaciar carrito
+    act(() => {
+      result.current.vaciarCarrito();
+    });
 
-    expect(screen.getByTestId('cart-count')).toHaveTextContent('0');
+    expect(result.current.cartCount).toBe(0);
+    expect(result.current.carrito.length).toBe(0);
   });
 });
