@@ -27,9 +27,13 @@ const UsuarioForm = () => {
   useEffect(() => {
     if (editRun) {
       const usuarios = getUsuariosStorage();
-      const u = usuarios.find(usr => (usr.run && usr.run.toUpperCase() === editRun.toUpperCase()) || (usr.email && usr.email.toLowerCase() === editRun.toLowerCase()));
+      const u = usuarios.find(
+        (usr) =>
+          (usr.run && usr.run.toUpperCase() === editRun.toUpperCase()) ||
+          (usr.email && usr.email.toLowerCase() === editRun.toLowerCase())
+      );
       if (u) {
-        const rIdx = regionesYComunas.findIndex(reg => reg.region === u.region);
+        const rIdx = regionesYComunas.findIndex((reg) => reg.region === u.region);
         setFormData({
           run: u.run || '',
           rol: u.rol || 'CLIENTE',
@@ -49,15 +53,20 @@ const UsuarioForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.nombre || !formData.apellidos || !formData.email || !formData.rol) {
-      alert("Por favor completa los campos obligatorios.");
+      alert('Por favor completa los campos obligatorios.');
       return;
     }
 
     const usuarios = getUsuariosStorage();
-    const regionTexto = formData.regionIdx !== '' ? regionesYComunas[Number(formData.regionIdx)]?.region : '';
+    const regionTexto =
+      formData.regionIdx !== '' ? regionesYComunas[Number(formData.regionIdx)]?.region : '';
 
     if (editRun) {
-      const idx = usuarios.findIndex(u => (u.run && u.run.toUpperCase() === editRun.toUpperCase()) || (u.email && u.email.toLowerCase() === editRun.toLowerCase()));
+      const idx = usuarios.findIndex(
+        (u) =>
+          (u.run && u.run.toUpperCase() === editRun.toUpperCase()) ||
+          (u.email && u.email.toLowerCase() === editRun.toLowerCase())
+      );
       if (idx !== -1) {
         usuarios[idx].nombre = formData.nombre.trim();
         usuarios[idx].apellidos = formData.apellidos.trim();
@@ -71,8 +80,8 @@ const UsuarioForm = () => {
           usuarios[idx].pass = btoa(formData.pass.trim());
         }
 
-        localStorage.setItem("rmstore_usuarios", JSON.stringify(usuarios));
-        alert("¡Usuario actualizado exitosamente!");
+        localStorage.setItem('rmstore_usuarios', JSON.stringify(usuarios));
+        alert('¡Usuario actualizado exitosamente!');
         navigate('/admin/usuarios');
       }
     } else {
@@ -88,27 +97,41 @@ const UsuarioForm = () => {
         pass: btoa(formData.pass.trim())
       };
       saveUsuarioStorage(nuevo);
-      alert("¡Usuario registrado exitosamente!");
+      alert('¡Usuario registrado exitosamente!');
       navigate('/admin/usuarios');
     }
   };
 
+  const userEmail = sesion?.usuario?.correo || sesion?.email || 'admin@duoc.cl';
+
   return (
-    <div className="admin-layout">
-      <AdminSidebar activo="usuarios" />
-      <main className="admin-main">
-        <header className="admin-header d-flex justify-content-between align-items-center gap-3 pe-3">
-        <h2 className="h4 fw-bold mb-0">Terminal POS - Punto de Venta</h2>
-        <div className="admin-user d-flex align-items-center ms-auto">
-            <span className="badge bg-light text-dark border px-3 py-2 fw-semibold fs-6 shadow-sm">
-            <i className="bi bi-person-circle me-2 text-danger"></i>
-            {sesion?.email}
-            </span>
+    <div className="container-fluid p-2 p-md-3 bg-light min-vh-100">
+      <div className="row g-3 m-0">
+        {/* COLUMNA 1: Sidebar adaptable */}
+        <div className="col-12 col-lg-3 col-xl-2 p-0 pe-lg-2">
+          <AdminSidebar activo="usuarios" />
         </div>
-        </header>
-        
-        <section className="admin-content p-4">
-          <div className="card-admin shadow-sm p-4 bg-white rounded-3 mx-auto" style={{ maxWidth: '820px' }}>
+
+        {/* COLUMNA 2: Formulario de Usuario */}
+        <div className="col-12 col-lg-9 col-xl-10 p-0 ps-lg-2">
+          {/* Encabezado Responsivo */}
+          <header className="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+              <h2 className="h5 h4-md fw-bold mb-0 text-dark">
+                <i className="bi bi-person-plus text-danger me-2"></i>
+                {editRun ? 'Editar Usuario' : 'Nuevo Usuario'}
+              </h2>
+              <div className="d-flex align-items-center gap-2 ms-auto ms-sm-0">
+                <span className="badge bg-light text-dark border px-3 py-2 fw-semibold fs-6 shadow-sm">
+                  <i className="bi bi-person-circle me-2 text-danger"></i>
+                  {userEmail}
+                </span>
+              </div>
+            </div>
+          </header>
+
+          {/* Tarjeta del Formulario */}
+          <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
             <form onSubmit={handleSubmit}>
               <div className="row g-3 mb-3">
                 <div className="col-12 col-md-6">
@@ -178,11 +201,15 @@ const UsuarioForm = () => {
                   <select
                     className="form-select"
                     value={formData.regionIdx}
-                    onChange={(e) => setFormData({ ...formData, regionIdx: e.target.value, comuna: '' })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, regionIdx: e.target.value, comuna: '' })
+                    }
                   >
                     <option value="">-- Selecciona región --</option>
                     {regionesYComunas.map((item, idx) => (
-                      <option key={idx} value={idx}>{item.region}</option>
+                      <option key={idx} value={idx}>
+                        {item.region}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -195,9 +222,12 @@ const UsuarioForm = () => {
                     disabled={formData.regionIdx === ''}
                   >
                     <option value="">-- Selecciona comuna --</option>
-                    {formData.regionIdx !== '' && regionesYComunas[Number(formData.regionIdx)].comunas.map((c, i) => (
-                      <option key={i} value={c}>{c}</option>
-                    ))}
+                    {formData.regionIdx !== '' &&
+                      regionesYComunas[Number(formData.regionIdx)].comunas.map((c, i) => (
+                        <option key={i} value={c}>
+                          {c}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -214,7 +244,9 @@ const UsuarioForm = () => {
 
               <div className="row g-3 mb-4">
                 <div className="col-12 col-md-6">
-                  <label className="form-label fw-semibold">{editRun ? 'Nueva Contraseña (opcional)' : 'Contraseña *'}</label>
+                  <label className="form-label fw-semibold">
+                    {editRun ? 'Nueva Contraseña (opcional)' : 'Contraseña *'}
+                  </label>
                   <input
                     type="password"
                     className="form-control"
@@ -225,14 +257,18 @@ const UsuarioForm = () => {
                 </div>
               </div>
 
-              <div className="d-flex gap-3">
-                <button type="submit" className="btn btn-danger fw-bold flex-grow-1">GUARDAR USUARIO</button>
-                <Link to="/admin/usuarios" className="btn btn-secondary fw-semibold">Volver</Link>
+              <div className="d-flex flex-column flex-sm-row gap-2 pt-2">
+                <button type="submit" className="btn btn-danger fw-bold flex-grow-1 py-2">
+                  GUARDAR USUARIO
+                </button>
+                <Link to="/admin/usuarios" className="btn btn-outline-secondary fw-semibold py-2">
+                  Volver
+                </Link>
               </div>
             </form>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
     </div>
   );
 };
