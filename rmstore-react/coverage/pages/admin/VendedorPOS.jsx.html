@@ -876,14 +876,7 @@
 <a name='L811'></a><a href='#L811'>811</a>
 <a name='L812'></a><a href='#L812'>812</a>
 <a name='L813'></a><a href='#L813'>813</a>
-<a name='L814'></a><a href='#L814'>814</a>
-<a name='L815'></a><a href='#L815'>815</a>
-<a name='L816'></a><a href='#L816'>816</a>
-<a name='L817'></a><a href='#L817'>817</a>
-<a name='L818'></a><a href='#L818'>818</a>
-<a name='L819'></a><a href='#L819'>819</a>
-<a name='L820'></a><a href='#L820'>820</a>
-<a name='L821'></a><a href='#L821'>821</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L814'></a><a href='#L814'>814</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1225,11 +1218,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1372,6 +1363,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1452,9 +1445,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1522,7 +1512,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1551,7 +1540,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1567,9 +1555,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1949,7 +1935,7 @@ const VendedorPOS = () =&gt; {
                       (i) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
                       &lt;tr&gt;
                           &lt;td style="text-align: left;"&gt;${i.nombre}&lt;/td&gt;
-                          &lt;td style="text-align: center;"&gt;${i.cant}&lt;/td&gt;                           &lt;td style="text-align: right;"&gt;$${(i.precio * i.cant).toLocaleString('es-CL')}&lt;/td&gt;
+                          &lt;td style="text-align: center;"&gt;${i.cant}&lt;/td&gt; &lt;td style="text-align: right;"&gt;$${(i.precio * i.cant).toLocaleString('es-CL')}&lt;/td&gt;
                       &lt;/tr&gt;
                   `
                     )
@@ -2018,231 +2004,148 @@ const VendedorPOS = () =&gt; {
   const userRol = sesion?.rol || 'Vendedor';
 &nbsp;
   return (
-    &lt;div className="admin-layout"&gt;
-      {/* Sidebar */}
-      &lt;AdminSidebar activo="pos"/&gt;
+    &lt;div className="container-fluid p-2 p-md-3 bg-light min-vh-100"&gt;
+      &lt;div className="row g-3 m-0"&gt;
+        {/* COLUMNA 1: Sidebar adaptable (Arriba en cel, izquierda en PC) */}
+        &lt;div className="col-12 col-lg-3 col-xl-2 p-0 pe-lg-2"&gt;
+          &lt;AdminSidebar activo="pos" /&gt;
+        &lt;/div&gt;
 &nbsp;
-      {/* Contenido Principal con estilos directos para pantalla completa */}
-      &lt;main
-        className="admin-main"
-        style={{ width: '100%', maxWidth: '100%', margin: 0, padding: '1.5rem', boxSizing: 'border-box' }}
-      &gt;
-        &lt;header className="admin-header d-flex justify-content-between align-items-center mb-3"&gt;
-          &lt;div className="d-flex align-items-center gap-2"&gt;
-            &lt;h2 className="h4 fw-bold mb-0"&gt;
-              &lt;i className="bi bi-cart-check text-danger me-2"&gt;&lt;/i&gt;Terminal POS
-            &lt;/h2&gt;
-            &lt;span className="badge bg-success" id="estado-caja-badge"&gt;
-              Caja Abierta
-            &lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div className="d-flex align-items-center gap-2"&gt;
-            &lt;button
-              className="btn btn-outline-warning btn-sm fw-bold"
-              onClick={reimprimirUltimoTicket}
-            &gt;
-              &lt;i className="bi bi-printer me-1"&gt;&lt;/i&gt;Reimprimir Ticket
-            &lt;/button&gt;
-            &lt;button
-              className="btn btn-outline-dark btn-sm fw-bold"
-<span class="fstat-no" title="function not covered" >              onClick={() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etShowCierre(true)}</span>
-            &gt;
-              &lt;i className="bi bi-lock me-1"&gt;&lt;/i&gt;Cierre de Caja
-            &lt;/button&gt;
-            &lt;span className="badge bg-danger px-3 py-2" id="badge-rol-vendedor"&gt;
-              {userRol}
-            &lt;/span&gt;
-            &lt;div className="admin-user fw-semibold" id="admin-user-email"&gt;
-              {userEmail}
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/header&gt;
-&nbsp;
-        &lt;section className="admin-content w-100"&gt;
-          &lt;div
-            className="pos-container"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 380px',
-              gap: '1.5rem',
-              width: '100%',
-              maxWidth: '100%'
-            }}
-          &gt;
-            {/* COLUMNA IZQUIERDA: Catálogo de Productos */}
-            &lt;div className="pos-catalog bg-white p-4 rounded-4 shadow-sm d-flex flex-column w-100"&gt;
-              &lt;div className="row g-2 mb-3"&gt;
-                &lt;div className="col-12 col-md-7"&gt;
-                  &lt;div className="input-group"&gt;
-                    &lt;span className="input-group-text bg-light border-end-0"&gt;
-                      &lt;i className="bi bi-search"&gt;&lt;/i&gt;
-                    &lt;/span&gt;
-                    &lt;input
-                      type="text"
-                      className="form-control bg-light border-start-0 ps-0"
-                      placeholder="Buscar por código, barra o nombre..."
-                      value={busqueda}
-<span class="fstat-no" title="function not covered" >                      onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setBusqueda(e.target.value)}</span>
-                    /&gt;
-                  &lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div className="col-12 col-md-5"&gt;
-                  &lt;select
-                    className="form-select bg-light"
-                    value={catFilter}
-<span class="fstat-no" title="function not covered" >                    onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setCatFilter(e.target.value)}</span>
-                  &gt;
-                    &lt;option value="Todos"&gt;Todas las Categorías&lt;/option&gt;
-                    &lt;option value="Star Wars"&gt;Star Wars&lt;/option&gt;
-                    &lt;option value="Technic"&gt;Technic&lt;/option&gt;
-                    &lt;option value="Marvel"&gt;Marvel&lt;/option&gt;
-                    &lt;option value="Harry Potter"&gt;Harry Potter&lt;/option&gt;
-                    &lt;option value="Icons"&gt;Icons / Botánica&lt;/option&gt;
-                    &lt;option value="City"&gt;City&lt;/option&gt;
-                  &lt;/select&gt;
-                &lt;/div&gt;
+        {/* COLUMNA 2: Contenido Principal POS */}
+        &lt;div className="col-12 col-lg-9 col-xl-10 p-0 ps-lg-2"&gt;
+          {/* Encabezado Responsivo */}
+          &lt;header className="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white"&gt;
+            &lt;div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2"&gt;
+              &lt;div className="d-flex align-items-center gap-2"&gt;
+                &lt;h2 className="h5 h4-md fw-bold mb-0"&gt;
+                  &lt;i className="bi bi-cart-check text-danger me-2"&gt;&lt;/i&gt;Terminal POS
+                &lt;/h2&gt;
+                &lt;span className="badge bg-success" id="estado-caja-badge"&gt;
+                  Caja Abierta
+                &lt;/span&gt;
               &lt;/div&gt;
-&nbsp;
-              {/* Grilla de Productos expandida para 16:9 */}
-              &lt;div
-                className="row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xxl-5 g-3 flex-grow-1 overflow-auto pe-1"
-                style={{ maxHeight: '65vh' }}
-              &gt;
-                {filtrados.length === 0 ? (
-                  &lt;div className="col-12 text-center text-muted py-5"&gt;
-                    &lt;i className="bi bi-search fs-1 d-block mb-2"&gt;&lt;/i&gt;
-                    No se encontraron productos coincidentes.
-                  &lt;/div&gt;
-                ) : (
-                  filtrados.map((p) =&gt; {
-                    const stock = Number(p.stock) || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
-                    const id = p.id || <span class="branch-1 cbranch-no" title="branch not covered" >p.codigo;</span>
-                    const img =
-                      p.imagenes &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >p.imagenes.length &gt; 0</span>
-                        ? <span class="branch-0 cbranch-no" title="branch not covered" >p.imagenes[0]</span>
-                        : p.imagen || '/img/lego-default.png';
-                    const precioValido = isNaN(Number(p.precio)) ? <span class="branch-0 cbranch-no" title="branch not covered" >0 : N</span>umber(p.precio);
-&nbsp;
-                    return (
-                      &lt;div className="col" key={id}&gt;
-                        &lt;div
-                          className={`card h-100 border-0 shadow-sm rounded-3 p-2 pos-product-card ${
-                            stock === 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >'opacity-50' : '</span>'
-                          }`}
-                          style={{ cursor: stock &gt; 0 ? 'pointer' : <span class="branch-1 cbranch-no" title="branch not covered" >'default' }</span>}
-                          onClick={() =&gt; stock &gt; 0 &amp;&amp; agregarAlPos(p)}
-                        &gt;
-                          &lt;div
-                            className="bg-light rounded-3 p-2 text-center mb-2 position-relative"
-                            style={{ height: '100px' }}
-                          &gt;
-                            &lt;img
-                              src={img}
-                              alt={p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto'}</span>
-                              style={{
-                                maxHeight: '80px',
-                                maxWidth: '100%',
-                                objectFit: 'contain'
-                              }}
-                            /&gt;
-                            &lt;span
-                              className={`badge ${
-                                stock &gt; 0 ? 'bg-success' : <span class="branch-1 cbranch-no" title="branch not covered" >'bg-danger'</span>
-                              } position-absolute top-0 end-0 m-1`}
-                            &gt;
-                              Stock: {stock}
-                            &lt;/span&gt;
-                          &lt;/div&gt;
-                          &lt;h6
-                            className="fw-bold small text-dark text-truncate mb-1"
-                            title={p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto sin nombre'}</span>
-                          &gt;
-                            {p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto sin nombre'}</span>
-                          &lt;/h6&gt;
-                          &lt;p className="fw-bold text-danger mb-0 small"&gt;
-                            ${precioValido.toLocaleString('es-CL')}
-                          &lt;/p&gt;
-                        &lt;/div&gt;
-                      &lt;/div&gt;
-                    );
-                  })
-                )}
-              &lt;/div&gt;
-            &lt;/div&gt;
-&nbsp;
-            {/* COLUMNA DERECHA: Ticket / Carrito y Cobro */}
-            &lt;div className="pos-ticket bg-white p-4 rounded-4 shadow-sm d-flex flex-column justify-content-between"&gt;
-              &lt;div&gt;
-                &lt;div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom"&gt;
-                  &lt;h5 className="fw-bold mb-0"&gt;
-                    &lt;i className="bi bi-receipt me-2"&gt;&lt;/i&gt;Orden de Venta
-                  &lt;/h5&gt;
-                  &lt;button className="btn btn-sm btn-outline-danger" onClick={limpiarPos}&gt;
-                    &lt;i className="bi bi-trash me-1"&gt;&lt;/i&gt;Limpiar
-                  &lt;/button&gt;
-                &lt;/div&gt;
-&nbsp;
-                {/* Cliente */}
-                &lt;div className="mb-3"&gt;
-                  &lt;label className="form-label small fw-semibold text-muted mb-1"&gt;
-                    Cliente Asociado
-                  &lt;/label&gt;
-                  &lt;input
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder="RUN / Nombre / Correo (Opcional)"
-                    value={clienteRun}
-<span class="fstat-no" title="function not covered" >                    onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setClienteRun(e.target.value)}</span>
-                  /&gt;
-                &lt;/div&gt;
-&nbsp;
-                {/* Lista de Ítems */}
-                &lt;div
-                  className="ticket-items overflow-auto mb-3 pe-1"
-                  style={{ maxHeight: '200px' }}
+              &lt;div className="d-flex flex-wrap align-items-center gap-2 w-100 w-sm-auto justify-content-between justify-content-sm-end"&gt;
+                &lt;button
+                  className="btn btn-outline-warning btn-sm fw-bold flex-grow-1 flex-sm-grow-0"
+                  onClick={reimprimirUltimoTicket}
                 &gt;
-                  {carritoPos.length === 0 ? (
-                    &lt;div className="text-center text-muted py-4"&gt;
-                      &lt;i className="bi bi-cart-x fs-2 d-block mb-1"&gt;&lt;/i&gt;Boleta vacía.
+                  &lt;i className="bi bi-printer me-1"&gt;&lt;/i&gt;Reimprimir
+                &lt;/button&gt;
+                &lt;button
+                  className="btn btn-outline-dark btn-sm fw-bold flex-grow-1 flex-sm-grow-0"
+<span class="fstat-no" title="function not covered" >                  onClick={() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etShowCierre(true)}</span>
+                &gt;
+                  &lt;i className="bi bi-lock me-1"&gt;&lt;/i&gt;Cierre
+                &lt;/button&gt;
+                &lt;div className="d-flex align-items-center gap-1 ms-auto ms-sm-0"&gt;
+                  &lt;span className="badge bg-danger px-2 py-1" id="badge-rol-vendedor"&gt;
+                    {userRol}
+                  &lt;/span&gt;
+                  &lt;small className="fw-semibold text-muted text-truncate" style={{ maxWidth: '140px' }}&gt;
+                    {userEmail}
+                  &lt;/small&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/header&gt;
+&nbsp;
+          {/* Grid de Productos y Ticket */}
+          &lt;div className="row g-3 m-0"&gt;
+            {/* CATÁLOGO DE PRODUCTOS */}
+            &lt;div className="col-12 col-xl-8 p-0 pe-xl-2"&gt;
+              &lt;div className="bg-white p-3 p-md-4 rounded-4 shadow-sm d-flex flex-column h-100"&gt;
+                {/* Buscador y Filtro */}
+                &lt;div className="row g-2 mb-3"&gt;
+                  &lt;div className="col-12 col-md-7"&gt;
+                    &lt;div className="input-group"&gt;
+                      &lt;span className="input-group-text bg-light border-end-0"&gt;
+                        &lt;i className="bi bi-search"&gt;&lt;/i&gt;
+                      &lt;/span&gt;
+                      &lt;input
+                        type="text"
+                        className="form-control bg-light border-start-0 ps-0"
+                        placeholder="Buscar por código, barra o nombre..."
+                        value={busqueda}
+<span class="fstat-no" title="function not covered" >                        onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setBusqueda(e.target.value)}</span>
+                      /&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;div className="col-12 col-md-5"&gt;
+                    &lt;select
+                      className="form-select bg-light"
+                      value={catFilter}
+<span class="fstat-no" title="function not covered" >                      onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setCatFilter(e.target.value)}</span>
+                    &gt;
+                      &lt;option value="Todos"&gt;Todas las Categorías&lt;/option&gt;
+                      &lt;option value="Star Wars"&gt;Star Wars&lt;/option&gt;
+                      &lt;option value="Technic"&gt;Technic&lt;/option&gt;
+                      &lt;option value="Marvel"&gt;Marvel&lt;/option&gt;
+                      &lt;option value="Harry Potter"&gt;Harry Potter&lt;/option&gt;
+                      &lt;option value="Icons"&gt;Icons / Botánica&lt;/option&gt;
+                      &lt;option value="City"&gt;City&lt;/option&gt;
+                    &lt;/select&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+&nbsp;
+                {/* Grilla de Tarjetas adaptables en Móvil (1 col en cel, 2-5 en PC) */}
+                &lt;div
+                  className="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-xxl-4 g-2 g-md-3 flex-grow-1 overflow-auto pe-1"
+                  style={{ maxHeight: '60vh' }}
+                &gt;
+                  {filtrados.length === 0 ? (
+                    &lt;div className="col-12 text-center text-muted py-5"&gt;
+                      &lt;i className="bi bi-search fs-1 d-block mb-2"&gt;&lt;/i&gt;
+                      No se encontraron productos coincidentes.
                     &lt;/div&gt;
                   ) : (
-                    carritoPos.map((item) =&gt; {
-                      const sub = item.precio * item.cant;
+                    filtrados.map((p) =&gt; {
+                      const stock = Number(p.stock) || <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
+                      const id = p.id || <span class="branch-1 cbranch-no" title="branch not covered" >p.codigo;</span>
+                      const img =
+                        p.imagenes &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >p.imagenes.length &gt; 0</span>
+                          ? <span class="branch-0 cbranch-no" title="branch not covered" >p.imagenes[0]</span>
+                          : p.imagen || '/img/lego-default.png';
+                      const precioValido = isNaN(Number(p.precio)) ? <span class="branch-0 cbranch-no" title="branch not covered" >0 : N</span>umber(p.precio);
+&nbsp;
                       return (
-                        &lt;div
-                          key={item.id}
-                          className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom"
-                        &gt;
-                          &lt;div style={{ maxWidth: '160px' }}&gt;
-                            &lt;h6 className="fw-bold small mb-0 text-truncate"&gt;{item.nombre}&lt;/h6&gt;
-                            &lt;span className="text-muted small"&gt;
-                              ${item.precio.toLocaleString('es-CL')}
-                            &lt;/span&gt;
-                          &lt;/div&gt;
-                          &lt;div className="d-flex align-items-center gap-2"&gt;
-                            &lt;div className="btn-group btn-group-sm"&gt;
-                              &lt;button
-                                className="btn btn-outline-secondary py-0 px-2"
-<span class="fstat-no" title="function not covered" >                                onClick={() =&gt; <span class="cstat-no" title="statement not covered" >c</span>ambiarCantPos(item.id, -1)}</span>
-                              &gt;
-                                -
-                              &lt;/button&gt;
-                              &lt;span className="btn btn-light disabled py-0 px-2 fw-bold text-dark"&gt;
-                                {item.cant}
-                              &lt;/span&gt;
-                              &lt;button
-                                className="btn btn-outline-secondary py-0 px-2"
-<span class="fstat-no" title="function not covered" >                                onClick={() =&gt; <span class="cstat-no" title="statement not covered" >c</span>ambiarCantPos(item.id, 1)}</span>
-                              &gt;
-                                +
-                              &lt;/button&gt;
-                            &lt;/div&gt;
-                            &lt;span
-                              className="fw-bold small text-dark"
-                              style={{ minWidth: '55px', textAlign: 'right' }}
+                        &lt;div className="col" key={id}&gt;
+                          &lt;div
+                            className={`card h-100 border-0 shadow-sm rounded-3 p-2 pos-product-card ${
+                              stock === 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >'opacity-50' : '</span>'
+                            }`}
+                            style={{ cursor: stock &gt; 0 ? 'pointer' : <span class="branch-1 cbranch-no" title="branch not covered" >'default' }</span>}
+                            onClick={() =&gt; stock &gt; 0 &amp;&amp; agregarAlPos(p)}
+                          &gt;
+                            &lt;div
+                              className="bg-light rounded-3 p-2 text-center mb-2 position-relative d-flex align-items-center justify-content-center"
+                              style={{ height: '90px' }}
                             &gt;
-                              ${sub.toLocaleString('es-CL')}
-                            &lt;/span&gt;
+                              &lt;img
+                                src={img}
+                                alt={p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto'}</span>
+                                style={{
+                                  maxHeight: '75px',
+                                  maxWidth: '100%',
+                                  objectFit: 'contain'
+                                }}
+                              /&gt;
+                              &lt;span
+                                className={`badge ${
+                                  stock &gt; 0 ? 'bg-success' : <span class="branch-1 cbranch-no" title="branch not covered" >'bg-danger'</span>
+                                } position-absolute top-0 end-0 m-1`}
+                              &gt;
+                                Stk: {stock}
+                              &lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;h6
+                              className="fw-bold small text-dark text-truncate mb-1"
+                              title={p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto sin nombre'}</span>
+                            &gt;
+                              {p.nombre || <span class="branch-1 cbranch-no" title="branch not covered" >'Producto sin nombre'}</span>
+                            &lt;/h6&gt;
+                            &lt;p className="fw-bold text-danger mb-0 small"&gt;
+                              ${precioValido.toLocaleString('es-CL')}
+                            &lt;/p&gt;
                           &lt;/div&gt;
                         &lt;/div&gt;
                       );
@@ -2250,75 +2153,156 @@ const VendedorPOS = () =&gt; {
                   )}
                 &lt;/div&gt;
               &lt;/div&gt;
+            &lt;/div&gt;
 &nbsp;
-              {/* Totales, Efectivo y Vuelto */}
-              &lt;div className="border-top pt-3"&gt;
-                &lt;div className="d-flex justify-content-between text-muted small mb-1"&gt;
-                  &lt;span&gt;Subtotal (Neto):&lt;/span&gt;
-                  &lt;span&gt;${subtotalNeto.toLocaleString('es-CL')}&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;div className="d-flex justify-content-between text-muted small mb-2"&gt;
-                  &lt;span&gt;IVA (19%):&lt;/span&gt;
-                  &lt;span&gt;${ivaCalculado.toLocaleString('es-CL')}&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;div className="d-flex justify-content-between fw-bold fs-4 text-dark mb-3"&gt;
-                  &lt;span&gt;TOTAL:&lt;/span&gt;
-                  &lt;span className="text-danger"&gt;${totalVentaActual.toLocaleString('es-CL')}&lt;/span&gt;
-                &lt;/div&gt;
-&nbsp;
-                {/* Pago en Efectivo y Vuelto */}
-                &lt;div className="row g-2 mb-3"&gt;
-                  &lt;div className="col-6"&gt;
-                    &lt;label className="form-label small fw-semibold text-muted mb-1"&gt;
-                      Método de Pago
-                    &lt;/label&gt;
-                    &lt;select
-                      className="form-select form-select-sm fw-bold"
-                      value={metodoPago}
-<span class="fstat-no" title="function not covered" >                      onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setMetodoPago(e.target.value)}</span>
-                    &gt;
-                      &lt;option value="Efectivo"&gt;💵 Efectivo&lt;/option&gt;
-                      &lt;option value="Debito"&gt;💳 Débito/Crédito&lt;/option&gt;
-                      &lt;option value="Transferencia"&gt;📲 Transferencia&lt;/option&gt;
-                    &lt;/select&gt;
+            {/* COLUMNA TICKET / ORDEN DE VENTA */}
+            &lt;div className="col-12 col-xl-4 p-0 ps-xl-2"&gt;
+              &lt;div className="bg-white p-3 p-md-4 rounded-4 shadow-sm d-flex flex-column justify-content-between h-100"&gt;
+                &lt;div&gt;
+                  &lt;div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom"&gt;
+                    &lt;h5 className="fw-bold mb-0 fs-6 fs-md-5"&gt;
+                      &lt;i className="bi bi-receipt me-2"&gt;&lt;/i&gt;Orden de Venta
+                    &lt;/h5&gt;
+                    &lt;button className="btn btn-sm btn-outline-danger" onClick={limpiarPos}&gt;
+                      &lt;i className="bi bi-trash me-1"&gt;&lt;/i&gt;Limpiar
+                    &lt;/button&gt;
                   &lt;/div&gt;
-                  {metodoPago === 'Efectivo' &amp;&amp; (
+&nbsp;
+                  {/* Cliente */}
+                  &lt;div className="mb-3"&gt;
+                    &lt;label className="form-label small fw-semibold text-muted mb-1"&gt;
+                      Cliente Asociado
+                    &lt;/label&gt;
+                    &lt;input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="RUN / Nombre (Opcional)"
+                      value={clienteRun}
+<span class="fstat-no" title="function not covered" >                      onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setClienteRun(e.target.value)}</span>
+                    /&gt;
+                  &lt;/div&gt;
+&nbsp;
+                  {/* Lista de Ítems */}
+                  &lt;div
+                    className="ticket-items overflow-auto mb-3 pe-1"
+                    style={{ maxHeight: '220px' }}
+                  &gt;
+                    {carritoPos.length === 0 ? (
+                      &lt;div className="text-center text-muted py-4"&gt;
+                        &lt;i className="bi bi-cart-x fs-2 d-block mb-1"&gt;&lt;/i&gt;Boleta vacía.
+                      &lt;/div&gt;
+                    ) : (
+                      carritoPos.map((item) =&gt; {
+                        const sub = item.precio * item.cant;
+                        return (
+                          &lt;div
+                            key={item.id}
+                            className="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom"
+                          &gt;
+                            &lt;div style={{ maxWidth: '130px' }}&gt;
+                              &lt;h6 className="fw-bold small mb-0 text-truncate"&gt;{item.nombre}&lt;/h6&gt;
+                              &lt;span className="text-muted small"&gt;
+                                ${item.precio.toLocaleString('es-CL')}
+                              &lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div className="d-flex align-items-center gap-1 gap-sm-2"&gt;
+                              &lt;div className="btn-group btn-group-sm"&gt;
+                                &lt;button
+                                  className="btn btn-outline-secondary py-0 px-2"
+<span class="fstat-no" title="function not covered" >                                  onClick={() =&gt; <span class="cstat-no" title="statement not covered" >c</span>ambiarCantPos(item.id, -1)}</span>
+                                &gt;
+                                  -
+                                &lt;/button&gt;
+                                &lt;span className="btn btn-light disabled py-0 px-2 fw-bold text-dark"&gt;
+                                  {item.cant}
+                                &lt;/span&gt;
+                                &lt;button
+                                  className="btn btn-outline-secondary py-0 px-2"
+<span class="fstat-no" title="function not covered" >                                  onClick={() =&gt; <span class="cstat-no" title="statement not covered" >c</span>ambiarCantPos(item.id, 1)}</span>
+                                &gt;
+                                  +
+                                &lt;/button&gt;
+                              &lt;/div&gt;
+                              &lt;span className="fw-bold small text-dark text-end ms-1" style={{ minWidth: '50px' }}&gt;
+                                ${sub.toLocaleString('es-CL')}
+                              &lt;/span&gt;
+                            &lt;/div&gt;
+                          &lt;/div&gt;
+                        );
+                      })
+                    )}
+                  &lt;/div&gt;
+                &lt;/div&gt;
+&nbsp;
+                {/* Totales, Efectivo y Vuelto */}
+                &lt;div className="border-top pt-3"&gt;
+                  &lt;div className="d-flex justify-content-between text-muted small mb-1"&gt;
+                    &lt;span&gt;Subtotal (Neto):&lt;/span&gt;
+                    &lt;span&gt;${subtotalNeto.toLocaleString('es-CL')}&lt;/span&gt;
+                  &lt;/div&gt;
+                  &lt;div className="d-flex justify-content-between text-muted small mb-2"&gt;
+                    &lt;span&gt;IVA (19%):&lt;/span&gt;
+                    &lt;span&gt;${ivaCalculado.toLocaleString('es-CL')}&lt;/span&gt;
+                  &lt;/div&gt;
+                  &lt;div className="d-flex justify-content-between fw-bold fs-4 text-dark mb-3"&gt;
+                    &lt;span&gt;TOTAL:&lt;/span&gt;
+                    &lt;span className="text-danger"&gt;${totalVentaActual.toLocaleString('es-CL')}&lt;/span&gt;
+                  &lt;/div&gt;
+&nbsp;
+                  {/* Pago en Efectivo y Vuelto */}
+                  &lt;div className="row g-2 mb-3"&gt;
                     &lt;div className="col-6"&gt;
                       &lt;label className="form-label small fw-semibold text-muted mb-1"&gt;
-                        Monto Recibido
+                        Método
                       &lt;/label&gt;
-                      &lt;input
-                        type="number"
-                        className="form-control form-control-sm fw-bold"
-                        placeholder="$0"
-                        value={montoPagaCon}
-<span class="fstat-no" title="function not covered" >                        onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setMontoPagaCon(e.target.value)}</span>
-                      /&gt;
+                      &lt;select
+                        className="form-select form-select-sm fw-bold"
+                        value={metodoPago}
+<span class="fstat-no" title="function not covered" >                        onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setMetodoPago(e.target.value)}</span>
+                      &gt;
+                        &lt;option value="Efectivo"&gt;💵 Efectivo&lt;/option&gt;
+                        &lt;option value="Debito"&gt;💳 Débito/Crédito&lt;/option&gt;
+                        &lt;option value="Transferencia"&gt;📲 Transferencia&lt;/option&gt;
+                      &lt;/select&gt;
+                    &lt;/div&gt;
+                    {metodoPago === 'Efectivo' &amp;&amp; (
+                      &lt;div className="col-6"&gt;
+                        &lt;label className="form-label small fw-semibold text-muted mb-1"&gt;
+                          Paga Con
+                        &lt;/label&gt;
+                        &lt;input
+                          type="number"
+                          className="form-control form-control-sm fw-bold"
+                          placeholder="$0"
+                          value={montoPagaCon}
+<span class="fstat-no" title="function not covered" >                          onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setMontoPagaCon(e.target.value)}</span>
+                        /&gt;
+                      &lt;/div&gt;
+                    )}
+                  &lt;/div&gt;
+&nbsp;
+                  {metodoPago === 'Efectivo' &amp;&amp; (
+                    &lt;div className="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 mb-3"&gt;
+                      &lt;span className="fw-semibold text-muted small"&gt;VUELTO:&lt;/span&gt;
+                      &lt;span className="fw-bold fs-5 text-success"&gt;
+                        ${vueltoCalculado.toLocaleString('es-CL')}
+                      &lt;/span&gt;
                     &lt;/div&gt;
                   )}
+&nbsp;
+                  {/* Botón Ejecutar Venta */}
+                  &lt;button
+                    className="btn btn-danger btn-lg w-100 fw-bold shadow-sm py-2"
+                    onClick={procesarVentaPos}
+                  &gt;
+                    &lt;i className="bi bi-check-circle-fill me-2"&gt;&lt;/i&gt;COMPLETAR VENTA
+                  &lt;/button&gt;
                 &lt;/div&gt;
-&nbsp;
-                {metodoPago === 'Efectivo' &amp;&amp; (
-                  &lt;div className="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 mb-3"&gt;
-                    &lt;span className="fw-semibold text-muted small"&gt;VUELTO A ENTREGAR:&lt;/span&gt;
-                    &lt;span className="fw-bold fs-5 text-success"&gt;
-                      ${vueltoCalculado.toLocaleString('es-CL')}
-                    &lt;/span&gt;
-                  &lt;/div&gt;
-                )}
-&nbsp;
-                {/* Botón Ejecutar Venta */}
-                &lt;button
-                  className="btn btn-danger btn-lg w-100 fw-bold shadow-sm py-2"
-                  onClick={procesarVentaPos}
-                &gt;
-                  &lt;i className="bi bi-check-circle-fill me-2"&gt;&lt;/i&gt;COMPLETAR VENTA
-                &lt;/button&gt;
               &lt;/div&gt;
             &lt;/div&gt;
           &lt;/div&gt;
-        &lt;/section&gt;
-      &lt;/main&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
 &nbsp;
       {/* Modal Apertura de Caja */}
       {showApertura &amp;&amp; (
@@ -2327,14 +2311,12 @@ const VendedorPOS = () =&gt; {
             &lt;div className="modal-content rounded-4 border-0"&gt;
               &lt;div className="modal-header border-0 pb-0"&gt;
                 &lt;h5 className="fw-bold"&gt;
-                  &lt;i className="bi bi-door-open text-danger me-2"&gt;&lt;/i&gt;Apertura de Caja (Turno
-                  POS)
+                  &lt;i className="bi bi-door-open text-danger me-2"&gt;&lt;/i&gt;Apertura de Caja
                 &lt;/h5&gt;
               &lt;/div&gt;
               &lt;div className="modal-body p-4"&gt;
                 &lt;p className="text-muted small"&gt;
-                  Ingresa el monto de efectivo base (sencillo) con el que inicias la jornada
-                  laboral.
+                  Ingresa el monto inicial con el que abres el turno.
                 &lt;/p&gt;
                 &lt;div className="mb-3"&gt;
                   &lt;label className="form-label fw-semibold"&gt;Fondo Inicial ($):&lt;/label&gt;
@@ -2359,15 +2341,14 @@ const VendedorPOS = () =&gt; {
         &lt;/div&gt;
       )}
 &nbsp;
-      {/* Modal Cierre de Caja (Arqueo a Ciegas) */}
+      {/* Modal Cierre de Caja */}
       {showCierre &amp;&amp; (
 <span class="branch-1 cbranch-no" title="branch not covered" >        &lt;div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1"&gt;</span>
           &lt;div className="modal-dialog modal-dialog-centered"&gt;
             &lt;div className="modal-content rounded-4 border-0"&gt;
               &lt;div className="modal-header border-0 pb-0"&gt;
                 &lt;h5 className="fw-bold"&gt;
-                  &lt;i className="bi bi-lock text-danger me-2"&gt;&lt;/i&gt;Arqueo de Caja (Cierre de
-                  Turno)
+                  &lt;i className="bi bi-lock text-danger me-2"&gt;&lt;/i&gt;Cierre de Caja
                 &lt;/h5&gt;
                 &lt;button
                   type="button"
@@ -2378,15 +2359,14 @@ const VendedorPOS = () =&gt; {
               &lt;div className="modal-body p-4"&gt;
                 &lt;div className="alert alert-warning small mb-3"&gt;
                   &lt;i className="bi bi-exclamation-triangle-fill me-1"&gt;&lt;/i&gt;
-                  &lt;strong&gt;Arqueo a Ciegas:&lt;/strong&gt; Ingresa el conteo físico del efectivo
-                  existente. El sistema no revela el monto esperado por políticas de seguridad.
+                  Ingresa el efectivo contado para cerrar turno.
                 &lt;/div&gt;
                 &lt;div className="mb-3"&gt;
-                  &lt;label className="form-label fw-semibold"&gt;Efectivo Físico Contado ($):&lt;/label&gt;
+                  &lt;label className="form-label fw-semibold"&gt;Efectivo Físico ($):&lt;/label&gt;
                   &lt;input
                     type="number"
                     className="form-control form-control-lg fw-bold"
-                    placeholder="Monto contado en caja..."
+                    placeholder="Monto contado..."
                     value={montoCierreFisico}
 <span class="fstat-no" title="function not covered" >                    onChange={(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setMontoCierreFisico(e.target.value)}</span>
                   /&gt;
@@ -2396,7 +2376,7 @@ const VendedorPOS = () =&gt; {
                   className="btn btn-dark fw-bold rounded-3 w-100 py-2"
                   onClick={handleConfirmarCierre}
                 &gt;
-                  REGISTRAR Y CERRAR TURNO
+                  CERRAR TURNO
                 &lt;/button&gt;
               &lt;/div&gt;
             &lt;/div&gt;
@@ -2404,7 +2384,7 @@ const VendedorPOS = () =&gt; {
         &lt;/div&gt;
       )}
 &nbsp;
-      {/* Modal Ticket / Comprobante de Venta */}
+      {/* Modal Ticket */}
       {showTicketModal &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >ultimoTicket &amp;&amp; (</span>
 <span class="branch-2 cbranch-no" title="branch not covered" >        &lt;div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1"&gt;</span>
           &lt;div className="modal-dialog modal-dialog-centered"&gt;
@@ -2416,7 +2396,6 @@ const VendedorPOS = () =&gt; {
                 &lt;h4 className="fw-bold mb-1"&gt;¡Venta Registrada!&lt;/h4&gt;
                 &lt;p className="text-muted small mb-3"&gt;Stock actualizado en tiempo real.&lt;/p&gt;
 &nbsp;
-                {/* Formato Ticket en pantalla */}
                 &lt;div className="p-3 rounded-3 ticket-pos text-start mb-3 small font-monospace bg-light border"&gt;
                   &lt;div className="text-center fw-bold text-uppercase fs-6"&gt;
                     RMSTORE COLECCIONABLES
@@ -2501,7 +2480,7 @@ const VendedorPOS = () =&gt; {
                     className="btn btn-outline-secondary fw-bold flex-grow-1"
 <span class="fstat-no" title="function not covered" >                    onClick={() =&gt; <span class="cstat-no" title="statement not covered" >i</span>mprimirTicketDirecto(ultimoTicket)}</span>
                   &gt;
-                    &lt;i className="bi bi-printer me-1"&gt;&lt;/i&gt;Imprimir Ticket
+                    &lt;i className="bi bi-printer me-1"&gt;&lt;/i&gt;Imprimir
                   &lt;/button&gt;
                   &lt;button
                     type="button"
@@ -2530,7 +2509,7 @@ export default VendedorPOS;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-18T13:31:37.643Z
+                at 2026-10-20T13:59:54.339Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
