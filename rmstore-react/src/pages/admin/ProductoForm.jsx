@@ -23,7 +23,7 @@ const ProductoForm = () => {
   useEffect(() => {
     if (editId) {
       const prods = getProductosStorage();
-      const p = prods.find(item => (item.id || item.codigo) === editId);
+      const p = prods.find((item) => (item.id || item.codigo) === editId);
       if (p) {
         setFormData({
           id: p.id || p.codigo,
@@ -40,8 +40,14 @@ const ProductoForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.id || !formData.nombre || !formData.categoria || !formData.precio || !formData.stock) {
-      alert("Por favor completa todos los campos requeridos.");
+    if (
+      !formData.id ||
+      !formData.nombre ||
+      !formData.categoria ||
+      !formData.precio ||
+      !formData.stock
+    ) {
+      alert('Por favor completa todos los campos requeridos.');
       return;
     }
 
@@ -58,26 +64,40 @@ const ProductoForm = () => {
     };
 
     saveProductoStorage(productoGuardar);
-    alert(editId ? "¡Producto actualizado!" : "¡Producto creado exitosamente!");
+    alert(editId ? '¡Producto actualizado!' : '¡Producto creado exitosamente!');
     navigate('/admin/productos');
   };
 
-  return (
-    <div className="admin-layout">
-      <AdminSidebar activo="productos" />
-      <main className="admin-main">
-        <header className="admin-header d-flex justify-content-between align-items-center">
-          <h2 className="h4 fw-bold mb-0">{editId ? 'Editar Producto' : 'Nuevo Producto'}</h2>
-          <div className="admin-user text-end text-truncate" style={{ maxWidth: '300px' }}>
-            <span className="badge bg-light text-dark border px-3 py-2 fw-semibold">
-                <i className="bi bi-person-circle me-2 text-danger"></i>
-                {sesion?.email || 'admin@duoc.cl'}
-            </span>
-            </div>
-        </header>
+  const userEmail = sesion?.usuario?.correo || sesion?.email || 'admin@duoc.cl';
 
-        <section className="admin-content p-4">
-          <div className="card-admin shadow-sm p-4 bg-white rounded-3 mx-auto" style={{ maxWidth: '800px' }}>
+  return (
+    <div className="container-fluid p-2 p-md-3 bg-light min-vh-100">
+      <div className="row g-3 m-0">
+        {/* COLUMNA 1: Sidebar adaptable */}
+        <div className="col-12 col-lg-3 col-xl-2 p-0 pe-lg-2">
+          <AdminSidebar activo="productos" />
+        </div>
+
+        {/* COLUMNA 2: Formulario de Producto */}
+        <div className="col-12 col-lg-9 col-xl-10 p-0 ps-lg-2">
+          {/* Encabezado Responsivo */}
+          <header className="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+              <h2 className="h5 h4-md fw-bold mb-0 text-dark">
+                <i className="bi bi-box-seam text-danger me-2"></i>
+                {editId ? 'Editar Producto' : 'Nuevo Producto'}
+              </h2>
+              <div className="d-flex align-items-center gap-2 ms-auto ms-sm-0">
+                <span className="badge bg-light text-dark border px-3 py-2 fw-semibold fs-6 shadow-sm">
+                  <i className="bi bi-person-circle me-2 text-danger"></i>
+                  {userEmail}
+                </span>
+              </div>
+            </div>
+          </header>
+
+          {/* Tarjeta del Formulario */}
+          <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
             <form onSubmit={handleSubmit}>
               <div className="row g-3 mb-3">
                 <div className="col-12 col-md-6">
@@ -169,14 +189,18 @@ const ProductoForm = () => {
                 ></textarea>
               </div>
 
-              <div className="d-flex gap-3">
-                <button type="submit" className="btn btn-danger fw-bold flex-grow-1">GUARDAR PRODUCTO</button>
-                <Link to="/admin/productos" className="btn btn-secondary fw-semibold">Volver</Link>
+              <div className="d-flex flex-column flex-sm-row gap-2 pt-2">
+                <button type="submit" className="btn btn-danger fw-bold flex-grow-1 py-2">
+                  GUARDAR PRODUCTO
+                </button>
+                <Link to="/admin/productos" className="btn btn-outline-secondary fw-semibold py-2">
+                  Volver
+                </Link>
               </div>
             </form>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
     </div>
   );
 };
