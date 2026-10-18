@@ -13,7 +13,7 @@ const Checkout = () => {
     nombre: sesion?.nombre || '',
     email: sesion?.email || '',
     direccion: '',
-    comuna: 'Cerrillos',
+    comuna: '',
     region: 'Región Metropolitana de Santiago',
     indicaciones: '',
   });
