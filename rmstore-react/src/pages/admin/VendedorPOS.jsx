@@ -25,10 +25,11 @@ const VendedorPOS = () => {
 
   // Cargar productos e inicializar turno
   useEffect(() => {
-    const datosProds = getProductosStorage();
-    setProductos(datosProds);
+    getProductosStorage().then((datos) => {
+      if (datos) setProductos(datos);
+    });
 
-    // Verificar turno de caja
+    // Mantener la verificación de turno de caja
     const turno = JSON.parse(localStorage.getItem('rmstore_turno_caja'));
     const userEmail = sesion?.usuario?.correo || sesion?.email || 'vendedor@duoc.cl';
     if (!turno || turno.estado !== 'ABIERTA' || turno.vendedor !== userEmail) {

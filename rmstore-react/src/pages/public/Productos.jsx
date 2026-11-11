@@ -19,7 +19,9 @@ const Productos = () => {
   const [orden, setOrden] = useState('relevancia');
 
   useEffect(() => {
-    setProductos(getProductosStorage());
+    getProductosStorage().then((datos) => {
+      if (datos) setProductos(datos);
+    });
   }, []);
 
   useEffect(() => {
@@ -59,13 +61,17 @@ const Productos = () => {
     }
   };
 
-  // Lógica de Filtrado y Ordenamiento
+  // Lógica de Filtrado y Ordenamiento Segura
   let productosFiltrados = productos.filter((p) => {
     if (!p || !p.nombre || p.nombre.trim() === '') return false;
 
+    // Extrae el texto del nombre de la categoría sin importar si viene String u Objeto
+    const nombreCatObj = typeof p.categoria === 'object' ? p.categoria?.nombre : p.categoria;
+    const catProductoLimpia = String(nombreCatObj || '').toLowerCase();
+    const catSeleccionadaLimpia = String(categoriaSel || '').toLowerCase();
+
     const pasaCategoria =
-      categoriaSel === 'Todos' ||
-      (p.categoria && p.categoria.toLowerCase() === categoriaSel.toLowerCase());
+      categoriaSel === 'Todos' || catProductoLimpia === catSeleccionadaLimpia;
 
     let pasaPrecio = true;
     const precio = Number(p.precio) || 0;

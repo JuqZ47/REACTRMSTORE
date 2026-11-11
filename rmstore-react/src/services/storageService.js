@@ -1,36 +1,74 @@
-import { setsIniciales, usuariosIniciales } from '../data/mockData';
+import { usuariosIniciales } from '../data/mockData';
 
-// --- PRODUCTOS ---
-export const getProductosStorage = () => {
-  const prods = localStorage.getItem("rmstore_productos");
-  if (!prods) {
-    localStorage.setItem("rmstore_productos", JSON.stringify(setsIniciales));
-    return setsIniciales;
+// URL base de tu microservicio de catálogo en Spring Boot
+const API_URL = 'http://localhost:8080/api/v1/productos';
+
+// ==========================================
+// --- PRODUCTOS (SPRING BOOT API REST) ---
+// ==========================================
+
+// 1. Obtener todos los productos (GET)
+export const getProductosStorage = async () => {
+  try {
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('Error al obtener productos desde el servidor');
+    return await response.json();
+  } catch (error) {
+    console.error('Error en GET /api/v1/productos:', error);
+    return [];
   }
-  return JSON.parse(prods);
 };
 
-export const saveProductoStorage = (producto) => {
-  const productos = getProductosStorage();
-  const index = productos.findIndex(p => (p.id || p.codigo) === (producto.id || producto.codigo));
-
-  if (index !== -1) {
-    productos[index] = { ...productos[index], ...producto };
-  } else {
-    productos.push(producto);
+// 2. Crear o actualizar un producto (POST)
+export const saveProductoStorage = async (producto) => {
+  try {
+    const response = await fetch(`${API_URL}/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(producto),
+    });
+    if (!response.ok) throw new Error('Error al guardar el producto');
+    return await response.json();
+  } catch (error) {
+    console.error('Error en POST /api/v1/productos/add:', error);
+    return null;
   }
-
-  localStorage.setItem("rmstore_productos", JSON.stringify(productos));
-  return productos;
 };
 
-export const deleteProductoStorage = (id) => {
-  const productos = getProductosStorage().filter(p => (p.id || p.codigo) !== id);
-  localStorage.setItem("rmstore_productos", JSON.stringify(productos));
-  return productos;
+// 3. Eliminar un producto (DELETE)
+export const deleteProductoStorage = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Error al eliminar el producto');
+    return await getProductosStorage();
+  } catch (error) {
+    console.error(`Error en DELETE /api/v1/productos/${id}:`, error);
+    return [];
+  }
 };
 
-// --- USUARIOS ---
+// 4. Descontar stock tras una compra (Opcional por API)
+export const descontarStock = async (itemsComprados) => {
+  // Se obtiene el catálogo actual y se envían las actualizaciones correspondientes
+  const productos = await getProductosStorage();
+  for (const item of itemsComprados) {
+    const prod = productos.find(p => (p.id || p.codigo) === item.id);
+    if (prod) {
+      const nuevoStock = Math.max(0, (Number(prod.stock) || 0) - item.cant);
+      await saveProductoStorage({ ...prod, stock: nuevoStock });
+    }
+  }
+  return await getProductosStorage();
+};
+
+// ==========================================
+// --- USUARIOS (MANTENIDOS EN LOCALSTORAGE) ---
+// ==========================================
+
 export const getUsuariosStorage = () => {
   const users = localStorage.getItem("rmstore_usuarios");
   if (!users) {
@@ -58,18 +96,4 @@ export const deleteUsuarioStorage = (identificador) => {
   const usuarios = getUsuariosStorage().filter(u => u.run !== identificador && u.email !== identificador);
   localStorage.setItem("rmstore_usuarios", JSON.stringify(usuarios));
   return usuarios;
-};
-
-// --- DESCUENTO DE INVENTARIO (CARRITO / POS) ---
-export const descontarStock = (itemsComprados) => {
-  const productos = getProductosStorage();
-  itemsComprados.forEach(item => {
-    const idx = productos.findIndex(p => (p.id || p.codigo) === item.id);
-    if (idx !== -1) {
-      const stockActual = Number(productos[idx].stock) || 0;
-      productos[idx].stock = Math.max(0, stockActual - item.cantidad);
-    }
-  });
-  localStorage.setItem("rmstore_productos", JSON.stringify(productos));
-  return productos;
 };

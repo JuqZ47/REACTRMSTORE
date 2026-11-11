@@ -31,4 +31,4 @@ describe('Pruebas en <Checkout />', () => {
       screen.getByText(/Tu carrito está vacío/i) || screen.getByText(/Dirección de entrega/i)
     ).toBeInTheDocument();
   });
-});
+}); 

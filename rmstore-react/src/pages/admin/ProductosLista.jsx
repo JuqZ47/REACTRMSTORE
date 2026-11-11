@@ -11,29 +11,38 @@ const ProductosLista = () => {
   const [catSel, setCatSel] = useState('');
 
   const cargarDatos = () => {
-    setProductos(getProductosStorage());
+    getProductosStorage().then((datos) => {
+      if (datos) setProductos(datos);
+    });
   };
 
   useEffect(() => {
     cargarDatos();
   }, []);
 
-  const handleEliminar = (id) => {
+  const handleEliminar = async (id) => {
     if (window.confirm(`¿Seguro que deseas eliminar el producto ${id}?`)) {
-      const actualizados = deleteProductoStorage(id);
-      setProductos(actualizados);
+      const actualizados = await deleteProductoStorage(id);
+      if (actualizados) {
+        setProductos(actualizados);
+      } else {
+        cargarDatos();
+      }
     }
   };
 
-  // Filtrado que descarta registros vacíos o corruptos
+  // Filtrado que descarta registros vacíos y extrae la categoría correctamente
   const filtrados = productos.filter((p) => {
     if (!p || !p.nombre || p.nombre.trim() === '') return false;
 
     const texto = busqueda.toLowerCase().trim();
-    const id = (p.id || p.codigo || '').toLowerCase();
+    const id = String(p.id || p.codigo || '').toLowerCase();
     const nombre = (p.nombre || '').toLowerCase();
     const coincideTexto = id.includes(texto) || nombre.includes(texto);
-    const coincideCat = !catSel || p.categoria === catSel;
+
+    const nombreCategoria = typeof p.categoria === 'object' ? p.categoria?.nombre : p.categoria;
+    const coincideCat = !catSel || nombreCategoria === catSel;
+
     return coincideTexto && coincideCat;
   });
 
@@ -42,14 +51,13 @@ const ProductosLista = () => {
   return (
     <div className="container-fluid p-2 p-md-3 bg-light min-vh-100">
       <div className="row g-3 m-0">
-        {/* COLUMNA 1: Sidebar adaptable (Arriba en cel, izquierda en PC) */}
+        {/* COLUMNA 1: Sidebar adaptable */}
         <div className="col-12 col-lg-3 col-xl-2 p-0 pe-lg-2">
           <AdminSidebar activo="productos" />
         </div>
 
-        {/* COLUMNA 2: Contenido Principal de Gestión de Productos */}
+        {/* COLUMNA 2: Contenido Principal */}
         <div className="col-12 col-lg-9 col-xl-10 p-0 ps-lg-2">
-          {/* Encabezado Responsivo */}
           <header className="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
             <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
               <h2 className="h5 h4-md fw-bold mb-0 text-dark">
@@ -64,7 +72,6 @@ const ProductosLista = () => {
             </div>
           </header>
 
-          {/* Tarjeta de Lista y Filtros */}
           <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
             <div className="row g-3 align-items-center mb-4">
               <div className="col-12 col-md-4">
@@ -105,7 +112,6 @@ const ProductosLista = () => {
               </div>
             </div>
 
-            {/* Tabla con scroll horizontal responsivo */}
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
                 <thead className="table-light">
@@ -133,9 +139,10 @@ const ProductosLista = () => {
                       const img =
                         p.imagenes && p.imagenes.length > 0
                           ? p.imagenes[0]
-                          : p.imagen || '/img/lego-default.png';
+                          : p.imagen || p.imagenUrl || '/img/lego-default.png';
                       const stock = Number(p.stock) || 0;
                       const precioValido = isNaN(Number(p.precio)) ? 0 : Number(p.precio);
+                      const textoCategoria = typeof p.categoria === 'object' ? p.categoria?.nombre : (p.categoria || 'Sin cat.');
 
                       return (
                         <tr key={id}>
@@ -152,7 +159,7 @@ const ProductosLista = () => {
                           <td>{p.nombre}</td>
                           <td>
                             <span className="badge bg-danger-subtle text-danger border border-danger-subtle">
-                              {p.categoria || 'Sin cat.'}
+                              {textoCategoria}
                             </span>
                           </td>
                           <td className="fw-semibold">${precioValido.toLocaleString('es-CL')}</td>

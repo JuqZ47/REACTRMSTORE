@@ -11,15 +11,17 @@ const DetalleProducto = () => {
   const [cantidad, setCantidad] = useState(1);
 
   useEffect(() => {
-    const catalogo = getProductosStorage();
-    const prodEncontrado = catalogo.find(p => (p.id || p.codigo) === id);
-    if (prodEncontrado) {
-      setProducto(prodEncontrado);
-      const imgInicial = (prodEncontrado.imagenes && prodEncontrado.imagenes.length > 0)
-        ? prodEncontrado.imagenes[0]
-        : (prodEncontrado.imagen || '/img/lego-default.png');
-      setFotoActiva(imgInicial);
-    }
+    getProductosStorage().then((catalogo) => {
+      if (!catalogo) return;
+      const prodEncontrado = catalogo.find(p => String(p.id || p.codigo) === String(id));
+      if (prodEncontrado) {
+        setProducto(prodEncontrado);
+        const imgInicial = (prodEncontrado.imagenes && prodEncontrado.imagenes.length > 0)
+          ? prodEncontrado.imagenes[0]
+          : (prodEncontrado.imagen || prodEncontrado.imagenUrl || '/img/lego-default.png');
+        setFotoActiva(imgInicial);
+      }
+    });
   }, [id]);
 
   if (!producto) {
@@ -36,7 +38,11 @@ const DetalleProducto = () => {
   const stockReal = Number(producto.stock) || 0;
   const listaFotos = (producto.imagenes && producto.imagenes.length > 0)
     ? producto.imagenes
-    : [producto.imagen || '/img/lego-default.png'];
+    : [producto.imagen || producto.imagenUrl || '/img/lego-default.png'];
+
+  const nombreCategoria = typeof producto.categoria === 'object'
+    ? producto.categoria?.nombre
+    : (producto.categoria || 'Sin Categoría');
 
   const handleDecrementar = () => setCantidad(prev => Math.max(1, prev - 1));
   const handleIncrementar = () => setCantidad(prev => (prev < stockReal ? prev + 1 : prev));
@@ -87,7 +93,7 @@ const DetalleProducto = () => {
 
           {/* Información y Compra */}
           <div className="col-12 col-md-6">
-            <span className="badge bg-danger-subtle text-danger fw-semibold mb-2">{producto.categoria}</span>
+            <span className="badge bg-danger-subtle text-danger fw-semibold mb-2">{nombreCategoria}</span>
             <h1 className="h3 fw-bold text-dark mb-2">{producto.nombre}</h1>
             <p className="text-muted small mb-3">Código: <span className="fw-semibold text-dark">{producto.id || producto.codigo}</span></p>
 

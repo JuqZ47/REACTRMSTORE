@@ -15,7 +15,9 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setProductos(getProductosStorage());
+    getProductosStorage().then((datos) => {
+      if (datos) setProductos(datos);
+    });
   }, []);
 
   // 1. DIAPOSITIVAS DEL HERO BANNER (Carrusel dinámico con videos de fondo)
